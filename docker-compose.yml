@@ -1,0 +1,17 @@
+# Alternativa a PostgreSQL instalado localmente: docker compose up -d
+# Expone el puerto 5433 para no chocar con un PostgreSQL local en 5432.
+# Usar con: DB_URL=jdbc:postgresql://localhost:5433/ilmagro
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: ilmagro
+      POSTGRES_USER: ilmagro
+      POSTGRES_PASSWORD: ilmagro
+    ports:
+      - "5433:5432"
+    volumes:
+      - ilmagro-data:/var/lib/postgresql
+
+volumes:
+  ilmagro-data:

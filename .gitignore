@@ -1,0 +1,14 @@
+# Herramientas locales (skills de diseño, capturas de pruebas con Playwright)
+.claude/
+skills-lock.json
+.playwright-mcp/
+*.png
+!frontend/public/**/*.png
+
+# Entornos y secretos
+.env
+.env.*
+
+# Salidas de las pruebas de diseño (perfil de Chrome, reportes, capturas)
+.taste-skill/
+frontend/shots/

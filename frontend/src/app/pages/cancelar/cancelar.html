@@ -1,0 +1,49 @@
+<div class="cancelar">
+  <div class="container">
+    <div class="tarjeta">
+      @if (cargando()) {
+        <p class="estado">Buscando el turno…</p>
+      } @else if (noExiste()) {
+        <h1>No encontramos ese turno</h1>
+        <p class="sub">El link puede estar incompleto. Fijate de copiarlo entero desde el mensaje de WhatsApp.</p>
+        <div class="acciones">
+          <a routerLink="/" class="btn btn--secondary">Volver al inicio</a>
+        </div>
+      } @else if (turno(); as t) {
+        @if (t.estado === 'CANCELADO') {
+          <h1>{{ recienCancelado() ? 'Turno cancelado' : 'Este turno ya está cancelado' }}</h1>
+          <p class="sub">El horario quedó libre: otra persona ya lo puede reservar.</p>
+        } @else if (t.cancelable) {
+          <h1>¿Cancelar este turno?</h1>
+          <p class="sub">Al cancelarlo, el horario vuelve a quedar libre para reservar.</p>
+        } @else {
+          <h1>Este turno ya pasó</h1>
+          <p class="sub">Solo se pueden cancelar turnos que todavía no empezaron.</p>
+        }
+
+        <dl [class.tachado]="t.estado === 'CANCELADO'">
+          <div><dt>Cliente</dt><dd>{{ t.clienteNombre }}</dd></div>
+          <div><dt>Servicio</dt><dd>{{ t.servicio }}</dd></div>
+          <div><dt>Día</dt><dd>{{ dia(t.fecha) }}</dd></div>
+          <div><dt>Horario</dt><dd>{{ t.horaInicio }} a {{ t.horaFin }} hs</dd></div>
+          <div><dt>Barbero</dt><dd>{{ t.barbero }}</dd></div>
+        </dl>
+
+        @if (error(); as e) {
+          <p class="estado error" role="alert">{{ e }}</p>
+        }
+
+        <div class="acciones">
+          @if (t.estado === 'CONFIRMADO' && t.cancelable) {
+            <button type="button" class="btn btn--primary" (click)="cancelar()" [disabled]="cancelando()">
+              {{ cancelando() ? 'Cancelando…' : 'Sí, cancelar y liberar el horario' }}
+            </button>
+          }
+          <a routerLink="/" class="btn btn--secondary">Volver al inicio</a>
+        </div>
+      } @else if (error(); as e) {
+        <p class="estado error" role="alert">{{ e }}</p>
+      }
+    </div>
+  </div>
+</div>

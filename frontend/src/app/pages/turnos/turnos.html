@@ -1,0 +1,171 @@
+<div class="turnos">
+  <div class="container">
+    @if (confirmado(); as t) {
+      <!-- CONFIRMACION -->
+      <div class="confirmacion">
+        <div class="check" aria-hidden="true">✓</div>
+        <h1>¡Turno confirmado!</h1>
+        <p class="sub">Te esperamos, {{ t.clienteNombre }}. Tu turno ya está en la agenda de {{ t.barbero }}.</p>
+        @if (linkTurno(); as link) {
+          <div class="aviso-wsp" role="status">
+            @if (wspAbierto()) {
+              <p><strong>Se abrió WhatsApp con tu turno.</strong> Tocá <em>Enviar</em> para que le llegue a {{ t.barbero }}.</p>
+              <a [href]="link" target="_blank" rel="noopener" class="btn btn--secondary">Abrir WhatsApp de nuevo</a>
+            } @else {
+              <p><strong>Último paso:</strong> mandale tu turno a {{ t.barbero }} por WhatsApp. El mensaje ya está escrito.</p>
+              <a [href]="link" target="_blank" rel="noopener" class="btn btn--primary">Enviar turno por WhatsApp</a>
+            }
+          </div>
+        }
+        <dl>
+          <div><dt>Servicio</dt><dd>{{ t.servicio }} · {{ precio(t.precio) }}</dd></div>
+          <div><dt>Barbero</dt><dd>{{ t.barbero }}</dd></div>
+          <div><dt>Día</dt><dd class="capital">{{ fechaLarga(t.fecha) }}</dd></div>
+          <div><dt>Horario</dt><dd>{{ t.horaInicio }} a {{ t.horaFin }} hs</dd></div>
+          <div><dt>N° de turno</dt><dd>#{{ t.id }}</dd></div>
+        </dl>
+        <p class="nota">Si no podés venir, avisale por WhatsApp así libera el horario para otra persona.</p>
+        <div class="acciones">
+          <a routerLink="/" class="btn btn--primary">Volver al inicio</a>
+          <button type="button" class="btn btn--secondary" (click)="nuevoTurno()">Reservar otro turno</button>
+        </div>
+      </div>
+    } @else {
+      <header class="encabezado">
+        <h1>Reservar turno en {{ b.nombre }}</h1>
+        <p>Elegí el servicio{{ variosBarberos() ? ', tu barbero' : '' }} y el horario que te quede cómodo. Pagás en el local.</p>
+      </header>
+
+      @if (cargandoDatos()) {
+        <p class="estado">Cargando servicios y horarios…</p>
+      } @else if (errorDatos()) {
+        <p class="estado error">No pudimos conectarnos con el sistema de turnos. Probá de nuevo en unos minutos.</p>
+      } @else {
+        <div class="layout">
+          <div class="pasos">
+            <!-- 1. SERVICIO -->
+            <fieldset class="paso">
+              <legend><span class="num">1</span> Servicio</legend>
+              <div class="opciones servicios">
+                @for (s of servicios(); track s.id) {
+                  <button type="button" class="opcion" [class.sel]="servicioSel()?.id === s.id"
+                          [attr.aria-pressed]="servicioSel()?.id === s.id" (click)="elegirServicio(s)">
+                    <strong>{{ s.nombre }}</strong>
+                    <span>{{ s.duracionMinutos }} min · {{ precio(s.precio) }}</span>
+                  </button>
+                }
+              </div>
+            </fieldset>
+
+            <!-- 2. BARBERO: solo si hay mas de uno (con uno queda elegido solo) -->
+            @if (variosBarberos()) {
+            <fieldset class="paso" [disabled]="!servicioSel()">
+              <legend><span class="num">2</span> Barbero</legend>
+              <div class="opciones barberos">
+                @for (bb of barberos(); track bb.id) {
+                  <button type="button" class="opcion" [class.sel]="barberoSel()?.id === bb.id"
+                          [attr.aria-pressed]="barberoSel()?.id === bb.id" (click)="elegirBarbero(bb)">
+                    <strong>{{ bb.nombre }}</strong>
+                    @if (bb.especialidad) {
+                      <span>{{ bb.especialidad }}</span>
+                    }
+                  </button>
+                }
+              </div>
+            </fieldset>
+            }
+
+            <!-- 3. DIA Y HORA -->
+            <fieldset class="paso" [disabled]="!servicioSel() || !barberoSel()">
+              <legend><span class="num">{{ variosBarberos() ? 3 : 2 }}</span> Día y horario</legend>
+              <div class="dias" role="listbox" aria-label="Día">
+                @for (d of dias(); track d.iso) {
+                  <button type="button" class="dia" role="option" [class.sel]="fechaSel() === d.iso"
+                          [attr.aria-selected]="fechaSel() === d.iso" (click)="elegirFecha(d.iso)">
+                    <span class="dia-semana">{{ d.diaSemana }}</span>
+                    <strong>{{ d.numero }}</strong>
+                    <span class="dia-mes">{{ d.mes }}</span>
+                  </button>
+                }
+              </div>
+
+              @if (fechaSel() && servicioSel() && barberoSel()) {
+                <div class="horas">
+                  @if (cargandoHorarios()) {
+                    <p class="estado chico">Buscando horarios libres…</p>
+                  } @else if (errorHorarios()) {
+                    <p class="estado chico error">No pudimos cargar los horarios.
+                      <button type="button" class="link" (click)="refrescarHorarios()">Reintentar</button></p>
+                  } @else if (horarios().length === 0) {
+                    <p class="estado chico">No quedan horarios libres ese día. Probá con otra fecha{{ variosBarberos() ? ' u otro barbero' : '' }}.</p>
+                  } @else {
+                    @for (h of horarios(); track h) {
+                      <button type="button" class="hora" [class.sel]="horaSel() === h"
+                              [attr.aria-pressed]="horaSel() === h" (click)="horaSel.set(h)">{{ h }}</button>
+                    }
+                  }
+                </div>
+              }
+            </fieldset>
+
+            <!-- 4. DATOS -->
+            <fieldset class="paso" [disabled]="!horaSel()">
+              <legend><span class="num">{{ variosBarberos() ? 4 : 3 }}</span> Tus datos</legend>
+              <form [formGroup]="form" (ngSubmit)="confirmar()" class="form" novalidate>
+                <label>
+                  <span>Nombre y apellido</span>
+                  <input formControlName="nombre" autocomplete="name" [class.inv]="invalido('nombre')" />
+                  @if (invalido('nombre')) {
+                    <small>Ingresá tu nombre.</small>
+                  }
+                </label>
+                <label>
+                  <span>Teléfono / WhatsApp</span>
+                  <input formControlName="telefono" type="tel" autocomplete="tel" inputmode="tel"
+                         placeholder="Con código de área" [class.inv]="invalido('telefono')" />
+                  @if (invalido('telefono')) {
+                    <small>Ingresá un teléfono válido.</small>
+                  }
+                </label>
+                <label>
+                  <span>Email <em>(opcional)</em></span>
+                  <input formControlName="email" type="email" autocomplete="email" [class.inv]="invalido('email')" />
+                  @if (invalido('email')) {
+                    <small>El email no parece válido.</small>
+                  }
+                </label>
+                <label class="full">
+                  <span>Comentarios <em>(opcional)</em></span>
+                  <textarea formControlName="notas" rows="3" placeholder="Ej: quiero un fade bajo, traigo foto de referencia"></textarea>
+                </label>
+
+                @if (errorEnvio(); as e) {
+                  <p class="error-envio full" role="alert">{{ e }}</p>
+                }
+
+                <button type="submit" class="btn btn--primary full" [disabled]="!listoParaConfirmar() || enviando()">
+                  {{ enviando() ? 'Reservando…' : 'Confirmar turno' }}
+                </button>
+              </form>
+            </fieldset>
+          </div>
+
+          <!-- RESUMEN -->
+          <aside class="resumen" aria-live="polite">
+            <h2>Tu turno</h2>
+            <dl>
+              <div><dt>Servicio</dt><dd>{{ servicioSel()?.nombre ?? '—' }}</dd></div>
+              <div><dt>Barbero</dt><dd>{{ barberoSel()?.nombre ?? '—' }}</dd></div>
+              <div><dt>Día</dt><dd class="capital">{{ fechaSel() ? fechaLarga(fechaSel()!) : '—' }}</dd></div>
+              <div><dt>Hora</dt><dd>{{ horaSel() ? horaSel() + ' hs' : '—' }}</dd></div>
+            </dl>
+            @if (servicioSel(); as s) {
+              <div class="total"><span>Total</span><strong>{{ precio(s.precio) }}</strong></div>
+              <p class="pago">Se abona en la barbería.</p>
+            }
+          </aside>
+        </div>
+      }
+    }
+  </div>
+</div>

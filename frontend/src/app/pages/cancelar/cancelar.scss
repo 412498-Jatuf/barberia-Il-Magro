@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+/* Misma piel que la confirmacion de turnos: tokens del kit (system.css) y la paleta de gala. */
+
+.cancelar {
+  padding: calc(var(--nav) + var(--s-8)) 0 var(--s-9);
+  min-height: 100svh;
+}
+
+.tarjeta {
+  max-width: 560px;
+  margin: 0 auto;
+  animation: aparecer 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  h1 {
+    font: var(--display-weight) clamp(32px, 4vw, 44px) / 1.1 var(--font-display);
+    letter-spacing: var(--display-tracking);
+    margin: 0 0 var(--s-2);
+  }
+}
+
+.sub {
+  color: var(--muted);
+  margin: 0 0 var(--s-7);
+}
+
+.estado {
+  color: var(--muted);
+  margin: var(--s-5) 0 0;
+
+  &.error {
+    color: #ff8a8a;
+  }
+}
+
+dl {
+  margin: 0;
+  display: grid;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-3) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  dt {
+    color: var(--muted);
+  }
+
+  dd {
+    margin: 0;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  &.tachado dd {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: rgb(201 169 110 / 0.6);
+  }
+}
+
+
+.acciones {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-7);
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta {
+    animation: none;
+  }
+}

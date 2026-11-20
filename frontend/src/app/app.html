@@ -1,0 +1,164 @@
+@if (esLanding()) {
+  <!-- HERO (ochentoso): el titulo en Bodoni con la palabra que rota en letra script con el degradé
+       del atardecer; a la derecha el sol a rayas y el Fiat 600 blanco, que avanza con el scroll -->
+  <section class="hero hero--word hero--ochenta" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text hero__in">
+      <div class="ochenta">
+        <div class="ochenta__copy">
+          <p class="ochenta__kicker"><svg class="monio" viewBox="0 0 40 16" aria-hidden="true"><path d="M20 8 L3 1.5 C1 1 0 2 0 4 V12 C0 14 1 15 3 14.5 Z M20 8 L37 1.5 C39 1 40 2 40 4 V12 C40 14 39 15 37 14.5 Z" /><rect x="16.5" y="4.5" width="7" height="7" rx="1.6" /></svg>Av. Pueyrredón · Córdoba</p>
+          <h1 id="hero-h">Barbería <em>Il Magro</em></h1>
+          <p class="ochenta__frase">Tu corte, a medida.</p>
+          <p class="hero__lead">Fades, flequillos y cortes a tijera de {{ b.barbero }}. Reservás online y pagás en el local.</p>
+          <div class="btn-row"><a class="btn btn--primary" routerLink="/turnos">Reservar turno</a></div>
+        </div>
+        <!-- la escena: un arco clasico con doble filete dorado, luz de gala desde arriba y el Fiat 600
+             de frente a linea fina. Con el scroll se acerca y le brillan los faros -->
+        <div class="escena" aria-hidden="true">
+          <div class="arco">
+            <div class="arco__luz"></div>
+            <div class="arco__piso"></div>
+            <!-- Fiat 600 de frente, a linea fina (como el de la foto de referencia): techo redondo,
+                 faros con aro cromado, parrilla, giros naranjas y paragolpes con las dos defensas -->
+            <svg class="fiat" viewBox="0 0 300 230">
+              <ellipse class="f-sombra" cx="150" cy="210" rx="118" ry="9" />
+              <g class="fiat__cuerpo">
+                <path class="f-antena" d="M66 104 L50 34" />
+                <!-- cabina y parabrisas -->
+                <path class="f-carroceria" d="M80 96 L94 38 C98 24 110 17 126 17 H174 C190 17 202 24 206 38 L220 96 Z" />
+                <path class="f-vidrio" d="M93 89 L104 42 C107 32 115 27 127 27 H173 C185 27 193 32 196 42 L207 89 Z" />
+                <path class="f-linea" d="M112 85 L146 79 M156 85 L190 79" />
+                <!-- frente: trompa redonda -->
+                <path class="f-carroceria" d="M80 94 H220 C234 94 244 100 246 112 L254 166 C255 178 248 186 236 186 H64 C52 186 45 178 46 166 L54 112 C56 100 66 94 80 94 Z" />
+                <path class="f-linea" d="M70 106 C110 116 190 116 230 106" />
+                <!-- faros con aro cromado -->
+                <circle class="f-aro" cx="86" cy="130" r="18" />
+                <circle class="f-faro" cx="86" cy="130" r="12.5" />
+                <circle class="f-aro" cx="214" cy="130" r="18" />
+                <circle class="f-faro" cx="214" cy="130" r="12.5" />
+                <!-- escudo y parrilla -->
+                <rect class="f-escudo" x="140" y="118" width="20" height="6" rx="2" />
+                <rect class="f-cromo" x="120" y="132" width="60" height="18" rx="5" />
+                <path class="f-cromo" d="M126 138 H174 M126 144 H174" />
+                <!-- giros naranjas -->
+                <circle class="f-giro" cx="92" cy="158" r="4.5" />
+                <circle class="f-giro" cx="208" cy="158" r="4.5" />
+                <!-- paragolpes con defensas -->
+                <rect class="f-cromo" x="40" y="164" width="220" height="11" rx="5.5" />
+                <rect class="f-cromo" x="104" y="150" width="9" height="30" rx="4.5" />
+                <rect class="f-cromo" x="187" y="150" width="9" height="30" rx="4.5" />
+              </g>
+              <!-- ruedas vistas de frente -->
+              <rect class="f-goma" x="58" y="182" width="30" height="27" rx="8" />
+              <rect class="f-goma" x="212" y="182" width="30" height="27" rx="8" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      @if (hechos().length) {
+        <dl class="ochenta__datos">
+          @for (h of hechos(); track h.dt) {
+            <div><dt>{{ h.dt }}</dt><dd>{{ h.dd }}</dd></div>
+          }
+        </dl>
+      }
+    </div></div>
+  </section>
+
+  @if (datos.listo()) {
+    <!-- VISIT: pantalla 2. La barberia, donde queda, horarios y el barbero; la foto del puesto a la derecha -->
+    <section class="section" id="visit" data-place="visit" aria-labelledby="visit-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="visit-h">La barbería</h2>
+          <p>{{ b.nosotros.join(' ') }}</p>
+        </div>
+        <div class="grid grid--top">
+          <div class="visit visit--card span-9">
+            <div class="visit__cols">
+              <div class="visit__col stack-4">
+                @if (b.calle) {
+                  <address class="visit__address">{{ b.calle }}@if (b.barrio) {<br>{{ b.barrio }}}</address>
+                  <a class="link" [href]="mapa" target="_blank" rel="noopener">Cómo llegar</a>
+                } @else {
+                  <p class="visit__address">Turno online, sin esperas</p>
+                }
+              </div>
+              <div class="visit__col">
+                <dl class="hours">
+                  @for (f of datos.filasHorario(); track f.dias) {
+                    <dt>{{ f.dias }}</dt><dd>{{ f.horas }}</dd>
+                  }
+                </dl>
+              </div>
+            </div>
+            <ul class="visit__rows">
+              <li><span>Barbero</span><span>{{ nombresBarberos() }}</span></li>
+              <li><span>Pago</span><span>En el local, al terminar</span></li>
+              @if (whatsapp) {
+                <li><span>Consultas</span><a class="link" [href]="whatsapp" target="_blank" rel="noopener">WhatsApp</a></li>
+              }
+            </ul>
+          </div>
+          <figure class="pl-photo span-3 start-10" style="--pl-r: .75">
+            <img src="assets/img/local-mesa.jpg" width="291" height="389"
+                 alt="El puesto de trabajo: máquinas, peines y tijeras sobre la mesada, frente al espejo con aros de luz"
+                 loading="lazy" decoding="async">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- LA OFERTA: servicios y precios, composicion tall-small -->
+    <section class="section" id="servicios" aria-labelledby="servicios-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="servicios-h">Servicios y precios</h2>
+          <p>Precio final, se paga en el local. Tocá un servicio para ver los horarios libres.</p>
+        </div>
+        <div class="grid grid--top">
+          <div class="span-6">
+            <p class="t-label">Barbería</p>
+            <ul class="rows">
+              @for (s of datos.servicios(); track s.id) {
+                <li>
+                  <a class="rows__name" routerLink="/turnos" [queryParams]="{ servicio: s.id }">{{ s.nombre }}<small>{{ s.duracionMinutos }} min · {{ s.descripcion }}</small></a>
+                  <span class="rows__value">{{ precio(s.precio) }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+          <figure class="pl-photo span-3 start-7" style="--pl-r: .8">
+            <img src="assets/img/corte-bob.jpg" width="415" height="561"
+                 alt="Bob a la mandíbula con la nuca rapada, visto de atrás"
+                 loading="lazy" decoding="async">
+          </figure>
+          <figure class="pl-photo span-3" style="--pl-r: .8">
+            <img src="assets/img/corte-bowl.jpg" width="415" height="516"
+                 alt="Corte bowl con flequillo recto y nuca degradada, de perfil"
+                 loading="lazy" decoding="async">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORTES: los trabajos de Il Magro (vienen de /api/cortes), cada foto a su tamaño -->
+    @if (datos.cortes().length) {
+      <section class="section" id="cortes" style="--hm: 2" aria-labelledby="cortes-h">
+        <div class="wrap">
+          <div class="section-head">
+            <h2 id="cortes-h">Cortes de Il Magro</h2>
+            <p>Traé una foto de referencia o elegí uno de estos; lo ajustamos a tu forma de cabeza y a cómo te peinás.</p>
+          </div>
+          <ul class="galeria" role="list">
+            @for (c of datos.cortes(); track c.id) {
+              <li class="pl-photo"><img [src]="c.imagenUrl" [alt]="c.nombre + ': ' + c.descripcion" loading="lazy" decoding="async"></li>
+            }
+          </ul>
+        </div>
+      </section>
+    }
+
+  }
+} @else {
+  <router-outlet />
+}
