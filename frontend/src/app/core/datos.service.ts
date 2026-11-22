@@ -25,11 +25,17 @@ export class DatosService {
   readonly filasHorario = computed<FilaHorario[]>(() => {
     const h = this.horario();
     if (!h) return [];
-    const abiertos = [...h.diasAtencion].sort((a, b) => a - b);
-    const cerrados = [1, 2, 3, 4, 5, 6, 7].filter((d) => !abiertos.includes(d));
-    const filas: FilaHorario[] = [{ dias: rango(abiertos), horas: `${hora(h.apertura)} a ${hora(h.cierre)} h` }];
-    if (cerrados.length) filas.push({ dias: rango(cerrados), horas: 'Cerrado' });
-    return filas;
+    // los dias con el mismo horario van juntos ("Martes a sábado · 15 a 22 h"); los cerrados, al final
+    const porHorario = new Map<string, number[]>();
+    for (let d = 1; d <= 7; d++) {
+      const tramos = h.semana.find((s) => s.dia === d)?.tramos ?? [];
+      const horas = tramos.length
+        ? `${tramos.map((t) => `${hora(t.desde)} a ${hora(t.hasta)}`).join(' y ')} h`
+        : 'Cerrado';
+      porHorario.set(horas, [...(porHorario.get(horas) ?? []), d]);
+    }
+    const filas = [...porHorario].map(([horas, dias]) => ({ dias: rango(dias), horas }));
+    return [...filas.filter((f) => f.horas !== 'Cerrado'), ...filas.filter((f) => f.horas === 'Cerrado')];
   });
 
   readonly precioDesde = computed(() => {

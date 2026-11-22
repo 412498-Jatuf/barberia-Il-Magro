@@ -21,13 +21,26 @@ export interface Barbero {
   fotoUrl: string | null;
 }
 
-export interface Horario {
-  apertura: string;
-  cierre: string;
-  intervaloMinutos: number;
+/** Un tramo de horas de un dia ("15:00" a "18:00"). */
+export interface TramoHorario {
+  desde: string;
+  hasta: string;
+}
+
+/** Un dia de la semana con sus tramos; mas de uno significa que hay pausa. */
+export interface DiaHorario {
   /** ISO-8601: 1 = lunes ... 7 = domingo */
-  diasAtencion: number[];
+  dia: number;
+  tramos: TramoHorario[];
+}
+
+export interface Horario {
+  intervaloMinutos: number;
   diasAnticipacion: number;
+  /** Solo los dias que se atienden; los que no estan, estan cerrados. */
+  semana: DiaHorario[];
+  /** yyyy-MM-dd: fechas proximas que se cerraron enteras (feriado, viaje). */
+  cerrados: string[];
 }
 
 export interface ReservarTurnoRequest {

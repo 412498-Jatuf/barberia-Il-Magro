@@ -28,15 +28,18 @@ public class ReservaTurnosService {
     private final BarberoRepository barberos;
     private final ServicioRepository servicios;
     private final RelojBarberia reloj;
+    private final HorarioService horario;
     private final ApplicationEventPublisher eventos;
 
     public ReservaTurnosService(AgendaService agenda, TurnoRepository turnos, BarberoRepository barberos,
-                                ServicioRepository servicios, RelojBarberia reloj, ApplicationEventPublisher eventos) {
+                                ServicioRepository servicios, RelojBarberia reloj, HorarioService horario,
+                                ApplicationEventPublisher eventos) {
         this.agenda = agenda;
         this.turnos = turnos;
         this.barberos = barberos;
         this.servicios = servicios;
         this.reloj = reloj;
+        this.horario = horario;
         this.eventos = eventos;
     }
 
@@ -50,7 +53,8 @@ public class ReservaTurnosService {
         LocalDateTime ahora = reloj.ahora();
 
         List<Turno> ocupados = turnos.confirmadosDelDia(barbero.getId(), cmd.fecha());
-        agenda.verificarDisponible(cmd.fecha(), cmd.hora(), servicio.getDuracionMinutos(), ocupados, ahora);
+        agenda.verificarDisponible(cmd.fecha(), cmd.hora(), servicio.getDuracionMinutos(),
+                horario.jornadaDe(cmd.fecha()), ocupados, ahora);
 
         Turno turno = turnos.guardar(
                 Turno.reservar(cliente, servicio, barbero, cmd.fecha(), cmd.hora(), cmd.notas(), ahora));

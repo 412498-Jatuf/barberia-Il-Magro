@@ -1,6 +1,6 @@
 package com.ilmagro.barberia.application.agenda;
 
-import com.ilmagro.barberia.domain.agenda.HorarioAtencion;
+import com.ilmagro.barberia.domain.agenda.ReglasDeReserva;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 public class RelojBarberia {
 
     private final Clock clock;
-    private final HorarioAtencion horario;
+    private final ReglasDeReserva reglas;
 
-    public RelojBarberia(Clock clock, HorarioAtencion horario) {
+    public RelojBarberia(Clock clock, ReglasDeReserva reglas) {
         this.clock = clock;
-        this.horario = horario;
+        this.reglas = reglas;
     }
 
     public LocalDateTime ahora() {
-        return LocalDateTime.now(clock.withZone(horario.zona()));
+        return LocalDateTime.now(clock.withZone(reglas.zona()));
     }
 }

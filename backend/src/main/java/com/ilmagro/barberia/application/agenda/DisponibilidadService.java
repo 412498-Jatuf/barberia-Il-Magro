@@ -2,7 +2,6 @@ package com.ilmagro.barberia.application.agenda;
 
 import com.ilmagro.barberia.application.shared.RecursoNoEncontradoException;
 import com.ilmagro.barberia.domain.agenda.AgendaService;
-import com.ilmagro.barberia.domain.agenda.HorarioAtencion;
 import com.ilmagro.barberia.domain.agenda.Turno;
 import com.ilmagro.barberia.domain.agenda.TurnoRepository;
 import com.ilmagro.barberia.domain.catalogo.BarberoRepository;
@@ -25,18 +24,21 @@ public class DisponibilidadService {
     private final BarberoRepository barberos;
     private final ServicioRepository servicios;
     private final RelojBarberia reloj;
+    private final HorarioService horario;
 
     public DisponibilidadService(AgendaService agenda, TurnoRepository turnos, BarberoRepository barberos,
-                                 ServicioRepository servicios, RelojBarberia reloj) {
+                                 ServicioRepository servicios, RelojBarberia reloj,
+                                 HorarioService horario) {
         this.agenda = agenda;
         this.turnos = turnos;
         this.barberos = barberos;
         this.servicios = servicios;
         this.reloj = reloj;
+        this.horario = horario;
     }
 
-    public HorarioAtencion horarioDeAtencion() {
-        return agenda.horario();
+    public HorarioPublico horarioDeAtencion() {
+        return horario.horarioPublico();
     }
 
     public List<LocalTime> horariosDisponibles(LocalDate fecha, Long barberoId, Long servicioId) {
@@ -46,6 +48,7 @@ public class DisponibilidadService {
         Servicio servicio = servicios.buscarPorId(servicioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Servicio no encontrado"));
         List<Turno> ocupados = turnos.confirmadosDelDia(barberoId, fecha);
-        return agenda.horariosLibres(fecha, servicio.getDuracionMinutos(), ocupados, reloj.ahora());
+        return agenda.horariosLibres(fecha, servicio.getDuracionMinutos(), horario.jornadaDe(fecha), ocupados,
+                reloj.ahora());
     }
 }

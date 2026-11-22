@@ -17,7 +17,7 @@ export function proximosDias(h: Horario, desde: Date = new Date()): DiaOpcion[] 
   for (let i = 0; i <= h.diasAnticipacion; i++) {
     const d = new Date(hoy);
     d.setDate(hoy.getDate() + i);
-    if (!h.diasAtencion.includes(diaIso(d))) continue;
+    if (!h.semana.some((s) => s.dia === diaIso(d)) || h.cerrados.includes(aIsoLocal(d))) continue;
     opciones.push({
       iso: aIsoLocal(d),
       diaSemana: i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : d.toLocaleDateString('es-AR', { weekday: 'short' }),

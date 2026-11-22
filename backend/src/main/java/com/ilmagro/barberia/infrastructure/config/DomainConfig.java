@@ -1,7 +1,7 @@
 package com.ilmagro.barberia.infrastructure.config;
 
 import com.ilmagro.barberia.domain.agenda.AgendaService;
-import com.ilmagro.barberia.domain.agenda.HorarioAtencion;
+import com.ilmagro.barberia.domain.agenda.ReglasDeReserva;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,14 +12,13 @@ import java.time.Clock;
 public class DomainConfig {
 
     @Bean
-    public HorarioAtencion horarioAtencion(HorarioProperties p) {
-        return new HorarioAtencion(p.apertura(), p.cierre(), p.intervaloMinutos(), p.dias(),
-                p.diasAnticipacion(), p.zona());
+    public ReglasDeReserva reglasDeReserva(HorarioProperties p) {
+        return new ReglasDeReserva(p.intervaloMinutos(), p.diasAnticipacion(), p.zona());
     }
 
     @Bean
-    public AgendaService agendaService(HorarioAtencion horario) {
-        return new AgendaService(horario);
+    public AgendaService agendaService(ReglasDeReserva reglas) {
+        return new AgendaService(reglas);
     }
 
     /** Reloj inyectable para poder fijar la hora en los tests. */

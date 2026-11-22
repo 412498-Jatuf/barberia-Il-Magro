@@ -3,7 +3,8 @@ package com.ilmagro.barberia.interfaces.rest.dto;
 import com.ilmagro.barberia.application.agenda.ReservarTurnoCommand;
 import com.ilmagro.barberia.application.agenda.TurnoParaCancelar;
 import com.ilmagro.barberia.application.agenda.TurnoReservado;
-import com.ilmagro.barberia.domain.agenda.HorarioAtencion;
+import com.ilmagro.barberia.application.agenda.HorarioPublico;
+import com.ilmagro.barberia.domain.agenda.Tramo;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -23,11 +24,25 @@ public final class AgendaDtos {
         return hora.format(HH_MM);
     }
 
-    public record HorarioResponse(String apertura, String cierre, int intervaloMinutos,
-                                  List<Integer> diasAtencion, int diasAnticipacion) {
-        public static HorarioResponse de(HorarioAtencion h) {
-            return new HorarioResponse(hhmm(h.apertura()), hhmm(h.cierre()), h.intervaloMinutos(),
-                    h.diasAtencion().stream().sorted().toList(), h.diasAnticipacion());
+    /** Un tramo de horas de un dia, ej. de 15:00 a 18:00. */
+    public record TramoResponse(String desde, String hasta) {
+        public static TramoResponse de(Tramo t) {
+            return new TramoResponse(hhmm(t.desde()), hhmm(t.hasta()));
+        }
+    }
+
+    /** Un dia de la semana (1 = lunes ... 7 = domingo) con sus tramos; mas de uno significa que hay pausa. */
+    public record DiaResponse(int dia, List<TramoResponse> tramos) {
+    }
+
+    /** El horario para el cliente: la semana (un dia sin tramos esta cerrado) y las fechas cerradas enteras. */
+    public record HorarioResponse(int intervaloMinutos, int diasAnticipacion, List<DiaResponse> semana,
+                                  List<LocalDate> cerrados) {
+        public static HorarioResponse de(HorarioPublico h) {
+            List<DiaResponse> semana = h.semana().entrySet().stream()
+                    .map(e -> new DiaResponse(e.getKey(), e.getValue().stream().map(TramoResponse::de).toList()))
+                    .toList();
+            return new HorarioResponse(h.intervaloMinutos(), h.diasAnticipacion(), semana, h.cerrados());
         }
     }
 
