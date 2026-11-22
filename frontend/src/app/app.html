@@ -11,46 +11,13 @@
           <p class="hero__lead">Fades, flequillos y cortes a tijera de {{ b.barbero }}. Reservás online y pagás en el local.</p>
           <div class="btn-row"><a class="btn btn--primary" routerLink="/turnos">Reservar turno</a></div>
         </div>
-        <!-- la escena: un arco clasico con doble filete dorado, luz de gala desde arriba y el Fiat 600
-             de frente a linea fina. Con el scroll se acerca y le brillan los faros -->
+        <!-- la escena: un arco clasico con doble filete dorado, luz de gala desde arriba y la silueta
+             del perfil del logo de Il Magro. Con el scroll se acerca y el contraluz brilla mas -->
         <div class="escena" aria-hidden="true">
           <div class="arco">
             <div class="arco__luz"></div>
             <div class="arco__piso"></div>
-            <!-- Fiat 600 de frente, a linea fina (como el de la foto de referencia): techo redondo,
-                 faros con aro cromado, parrilla, giros naranjas y paragolpes con las dos defensas -->
-            <svg class="fiat" viewBox="0 0 300 230">
-              <ellipse class="f-sombra" cx="150" cy="210" rx="118" ry="9" />
-              <g class="fiat__cuerpo">
-                <path class="f-antena" d="M66 104 L50 34" />
-                <!-- cabina y parabrisas -->
-                <path class="f-carroceria" d="M80 96 L94 38 C98 24 110 17 126 17 H174 C190 17 202 24 206 38 L220 96 Z" />
-                <path class="f-vidrio" d="M93 89 L104 42 C107 32 115 27 127 27 H173 C185 27 193 32 196 42 L207 89 Z" />
-                <path class="f-linea" d="M112 85 L146 79 M156 85 L190 79" />
-                <!-- frente: trompa redonda -->
-                <path class="f-carroceria" d="M80 94 H220 C234 94 244 100 246 112 L254 166 C255 178 248 186 236 186 H64 C52 186 45 178 46 166 L54 112 C56 100 66 94 80 94 Z" />
-                <path class="f-linea" d="M70 106 C110 116 190 116 230 106" />
-                <!-- faros con aro cromado -->
-                <circle class="f-aro" cx="86" cy="130" r="18" />
-                <circle class="f-faro" cx="86" cy="130" r="12.5" />
-                <circle class="f-aro" cx="214" cy="130" r="18" />
-                <circle class="f-faro" cx="214" cy="130" r="12.5" />
-                <!-- escudo y parrilla -->
-                <rect class="f-escudo" x="140" y="118" width="20" height="6" rx="2" />
-                <rect class="f-cromo" x="120" y="132" width="60" height="18" rx="5" />
-                <path class="f-cromo" d="M126 138 H174 M126 144 H174" />
-                <!-- giros naranjas -->
-                <circle class="f-giro" cx="92" cy="158" r="4.5" />
-                <circle class="f-giro" cx="208" cy="158" r="4.5" />
-                <!-- paragolpes con defensas -->
-                <rect class="f-cromo" x="40" y="164" width="220" height="11" rx="5.5" />
-                <rect class="f-cromo" x="104" y="150" width="9" height="30" rx="4.5" />
-                <rect class="f-cromo" x="187" y="150" width="9" height="30" rx="4.5" />
-              </g>
-              <!-- ruedas vistas de frente -->
-              <rect class="f-goma" x="58" y="182" width="30" height="27" rx="8" />
-              <rect class="f-goma" x="212" y="182" width="30" height="27" rx="8" />
-            </svg>
+            <img class="silueta" src="assets/img/silueta.jpg" width="900" height="689" alt="" decoding="async">
           </div>
         </div>
       </div>
@@ -128,13 +95,13 @@
             </ul>
           </div>
           <figure class="pl-photo span-3 start-7" style="--pl-r: .8">
-            <img src="assets/img/corte-bob.jpg" width="415" height="561"
-                 alt="Bob a la mandíbula con la nuca rapada, visto de atrás"
+            <img src="assets/img/corte-flequillo-fade.jpg" width="800" height="1067"
+                 alt="Flequillo largo hacia el costado con mid fade, de perfil"
                  loading="lazy" decoding="async">
           </figure>
           <figure class="pl-photo span-3" style="--pl-r: .8">
-            <img src="assets/img/corte-bowl.jpg" width="415" height="516"
-                 alt="Corte bowl con flequillo recto y nuca degradada, de perfil"
+            <img src="assets/img/corte-mullet-barba.jpg" width="800" height="1067"
+                 alt="Mullet con taper fade y barba perfilada, de perfil"
                  loading="lazy" decoding="async">
           </figure>
         </div>

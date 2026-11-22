@@ -46,20 +46,21 @@ class ReservaTurnosServiceTest {
     @Test
     void reservaUnTurnoYElHorarioDejaDeEstarDisponible() {
         Long barberoId = barberos.buscarTodos().getFirst().getId();
+        // todos los turnos son de 30 minutos
         Long comboId = servicios.buscarTodos().stream()
-                .filter(s -> s.getDuracionMinutos() == 60).findFirst().orElseThrow().getId();
+                .filter(s -> s.getNombre().equals("Corte y barba")).findFirst().orElseThrow().getId();
 
         TurnoReservado turno = reservas.reservar(new ReservarTurnoCommand("Juan Perez", "11 2233-4455",
                 "juan@example.com", comboId, barberoId, MARTES, LocalTime.of(18, 0), null));
 
         assertThat(turno.id()).isNotNull();
-        assertThat(turno.horaFin()).isEqualTo(LocalTime.of(19, 0));
+        assertThat(turno.horaFin()).isEqualTo(LocalTime.of(18, 30));
         assertThat(reservas.horariosDisponibles(MARTES, barberoId, comboId))
-                .doesNotContain(LocalTime.of(17, 30), LocalTime.of(18, 0), LocalTime.of(18, 30))
-                .contains(LocalTime.of(17, 0), LocalTime.of(19, 0));
+                .doesNotContain(LocalTime.of(18, 0))
+                .contains(LocalTime.of(17, 30), LocalTime.of(18, 30));
 
         assertThatThrownBy(() -> reservas.reservar(new ReservarTurnoCommand("Otro", "1199998888", null,
-                comboId, barberoId, MARTES, LocalTime.of(18, 30), null)))
+                comboId, barberoId, MARTES, LocalTime.of(18, 0), null)))
                 .isInstanceOf(TurnoNoDisponibleException.class);
     }
 

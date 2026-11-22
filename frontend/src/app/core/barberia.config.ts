@@ -28,8 +28,8 @@ export const BARBERIA: DatosBarberia = {
   whatsapp: '5493516598837',
   instagram: null,
   nosotros: [
-    'Il Magro es la barbería de Luca Fracassi. Tiene 21 años y cortar el pelo es lo que más le apasiona: fades, flequillos, mullets y cortes a tijera.',
-    'Atiende con turno, de a un cliente por vez, en su local de Av. Pueyrredón, en Córdoba.',
+    'IL MAGRO no busca solamente ofrecer un corte de pelo, sino construir una imagen. Cada cliente tiene una estructura, facciones y estilo propios; el trabajo consiste en encontrar el corte que mejor los represente.',
+    'Atención por turnos de 30 minutos de duración, con más de 5 años de experiencia.',
   ],
 };
 
