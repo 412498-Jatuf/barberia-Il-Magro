@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Component, Injector, afterNextRender, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -35,6 +36,16 @@ export class App {
     { initialValue: location.pathname === '/' },
   );
 
+  /** En /admin (panel privado de Luca) no va la navegacion ni el pie del sitio publico. */
+  private readonly esAdmin = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => new URL(e.urlAfterRedirects, location.origin).pathname.startsWith('/admin')),
+    ),
+    { initialValue: location.pathname.startsWith('/admin') },
+  );
+  private readonly documento = inject(DOCUMENT);
+
   protected readonly nombresBarberos = computed(() => {
     const n = this.datos.barberos().map((b) => b.nombre);
     return n.length > 1 ? `${n.slice(0, -1).join(', ')} y ${n.at(-1)}` : (n[0] ?? '');
@@ -53,6 +64,8 @@ export class App {
 
   constructor() {
     this.datos.cargar();
+    // body.es-admin lo usan los estilos para esconder el encabezado, el pie y la barra de reservar
+    effect(() => this.documento.body.classList.toggle('es-admin', this.esAdmin()));
     // El kit lee el DOM al iniciar: se carga cuando la landing ya esta dibujada con los datos.
     effect(() => {
       if (this.datos.listo() && this.esLanding()) {

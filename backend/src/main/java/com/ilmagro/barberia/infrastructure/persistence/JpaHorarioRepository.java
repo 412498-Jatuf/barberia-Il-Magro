@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 class JpaHorarioRepository implements HorarioRepository {
@@ -27,5 +28,31 @@ class JpaHorarioRepository implements HorarioRepository {
     @Override
     public List<Bloqueo> bloqueosEntre(LocalDate desde, LocalDate hasta) {
         return bloqueos.findByFechaBetweenOrderByFechaAscDesdeAsc(desde, hasta);
+    }
+
+    @Override
+    public void reemplazarSemana(List<TramoSemanal> nuevos) {
+        tramos.deleteAllInBatch();
+        tramos.saveAll(nuevos);
+    }
+
+    @Override
+    public List<Bloqueo> bloqueosDesde(LocalDate desde) {
+        return bloqueos.findByFechaGreaterThanEqualOrderByFechaAscDesdeAsc(desde);
+    }
+
+    @Override
+    public Bloqueo guardarBloqueo(Bloqueo bloqueo) {
+        return bloqueos.save(bloqueo);
+    }
+
+    @Override
+    public Optional<Bloqueo> buscarBloqueo(Long id) {
+        return bloqueos.findById(id);
+    }
+
+    @Override
+    public void eliminarBloqueo(Bloqueo bloqueo) {
+        bloqueos.delete(bloqueo);
     }
 }

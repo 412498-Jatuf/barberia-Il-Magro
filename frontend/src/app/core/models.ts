@@ -86,3 +86,51 @@ export interface ApiError {
   mensaje: string;
   campos?: Record<string, string>;
 }
+
+// ---------- panel de administracion (/admin) ----------
+
+/** Un turno tal como lo ve Luca: con el telefono del cliente para poder avisarle. */
+export interface TurnoAdmin {
+  id: number;
+  clienteNombre: string;
+  clienteTelefono: string;
+  clienteEmail: string | null;
+  servicio: string;
+  duracionMinutos: number;
+  barbero: string;
+  /** yyyy-MM-dd */
+  fecha: string;
+  horaInicio: string;
+  horaFin: string;
+  estado: 'CONFIRMADO' | 'CANCELADO';
+  notas: string | null;
+  cancelable: boolean;
+}
+
+/** Un cierre de la agenda: un dia entero (sin horas) o unas horas de un dia. */
+export interface BloqueoAgenda {
+  id: number;
+  fecha: string;
+  desde: string | null;
+  hasta: string | null;
+  motivo: string | null;
+  diaCompleto: boolean;
+}
+
+export interface NuevoBloqueo {
+  fecha: string;
+  desde: string | null;
+  hasta: string | null;
+  motivo: string | null;
+}
+
+/** Tras cambiar el horario: lo guardado y los turnos que quedaron fuera (no se cancelan solos). */
+export interface SemanaGuardada {
+  semana: DiaHorario[];
+  turnosAfectados: TurnoAdmin[];
+}
+
+export interface BloqueoCreado {
+  bloqueo: BloqueoAgenda;
+  turnosAfectados: TurnoAdmin[];
+}

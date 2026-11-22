@@ -23,6 +23,7 @@ import java.util.function.Predicate;
  *
  * <p>Reservas: barberia.seguridad.reservas-por-hora (por defecto 5 por hora).
  * Cancelaciones (ver y cancelar): barberia.seguridad.cancelaciones-por-hora (por defecto 30 por hora).
+ * Intentos de login al panel: barberia.seguridad.logins-por-hora (por defecto 10 por hora).
  * Para limitar otra ruta alcanza con sumar una {@link Regla} a la lista.
  *
  * <p>La IP es la de la conexion. Detras de un proxy (Nginx, Cloudflare, Render...) hay que poner
@@ -42,6 +43,7 @@ public class LimiteDePedidosFilter extends OncePerRequestFilter {
 
     public LimiteDePedidosFilter(@Value("${barberia.seguridad.reservas-por-hora:5}") int reservasPorHora,
                                  @Value("${barberia.seguridad.cancelaciones-por-hora:30}") int cancelacionesPorHora,
+                                 @Value("${barberia.seguridad.logins-por-hora:10}") int loginsPorHora,
                                  Clock clock) {
         this.reglas = List.of(
                 new Regla("reserva",
@@ -51,7 +53,11 @@ public class LimiteDePedidosFilter extends OncePerRequestFilter {
                 new Regla("cancelacion",
                         req -> req.getRequestURI().startsWith("/api/turnos/cancelacion/"),
                         cancelacionesPorHora,
-                        "Demasiados intentos. Probá de nuevo más tarde."));
+                        "Demasiados intentos. Probá de nuevo más tarde."),
+                new Regla("login",
+                        req -> "POST".equals(req.getMethod()) && req.getRequestURI().equals("/api/admin/login"),
+                        loginsPorHora,
+                        "Demasiados intentos de ingreso. Probá de nuevo más tarde."));
         this.ventana = new VentanaDeslizante(Duration.ofHours(1), clock);
     }
 

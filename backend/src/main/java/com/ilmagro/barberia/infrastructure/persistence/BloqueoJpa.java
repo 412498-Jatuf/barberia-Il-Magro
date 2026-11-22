@@ -9,4 +9,6 @@ import java.util.List;
 public interface BloqueoJpa extends JpaRepository<Bloqueo, Long> {
 
     List<Bloqueo> findByFechaBetweenOrderByFechaAscDesdeAsc(LocalDate desde, LocalDate hasta);
+
+    List<Bloqueo> findByFechaGreaterThanEqualOrderByFechaAscDesdeAsc(LocalDate desde);
 }

@@ -11,6 +11,11 @@ public interface TurnoRepository {
 
     Turno guardar(Turno turno);
 
+    Optional<Turno> buscarPorId(Long id);
+
+    /** Todos los turnos (confirmados y cancelados) con fecha entre {@code desde} y {@code hasta}, en orden. */
+    List<Turno> turnosEntre(LocalDate desde, LocalDate hasta);
+
     /** El turno del link de cancelacion. */
     Optional<Turno> buscarPorCodigoCancelacion(String codigo);
 }

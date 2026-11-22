@@ -1,0 +1,72 @@
+<section class="bloque" aria-labelledby="cierres-h">
+  <div class="bloque__cabecera">
+    <h2 id="cierres-h">Cerrar un día u horas</h2>
+  </div>
+  <p class="ayuda">Para un feriado, un viaje o un trámite. No cambia tu horario de la semana: solo saca esa fecha.</p>
+
+  <form class="form-cierre" [formGroup]="form" (ngSubmit)="cerrar()" novalidate>
+    <label class="campo">
+      <span>Fecha</span>
+      <input type="date" formControlName="fecha" [min]="hoy" />
+    </label>
+
+    <label class="check">
+      <input type="checkbox" formControlName="todoElDia" />
+      <span>Cerrar todo el día</span>
+    </label>
+
+    @if (!form.controls.todoElDia.value) {
+      <div class="par">
+        <label class="campo">
+          <span>Desde</span>
+          <input type="time" formControlName="desde" step="900" />
+        </label>
+        <label class="campo">
+          <span>Hasta</span>
+          <input type="time" formControlName="hasta" step="900" />
+        </label>
+      </div>
+    }
+
+    <label class="campo">
+      <span>Motivo <em>(opcional, solo lo ves vos)</em></span>
+      <input formControlName="motivo" maxlength="200" />
+    </label>
+
+    @if (error(); as e) {
+      <p class="estado error" role="alert">{{ e }}</p>
+    }
+    @if (recienCerrado()) {
+      <p class="estado ok" role="status">Listo, ese horario ya no se puede reservar.</p>
+    }
+    <app-admin-afectados [turnos]="afectados()" />
+
+    <button type="submit" class="btn btn--primary" [disabled]="guardando() || !form.controls.fecha.value">
+      {{ guardando() ? 'Guardando…' : 'Cerrar' }}
+    </button>
+  </form>
+
+  <h3 class="dia-titulo">Cierres cargados</h3>
+  @if (cargando()) {
+    <p class="estado">Cargando…</p>
+  } @else {
+    <ul class="lista" role="list">
+      @for (c of cierres(); track c.id) {
+        <li class="cierre">
+          <div>
+            <strong>{{ dia(c.fecha) }}</strong>
+            <span>{{ c.diaCompleto ? 'Todo el día' : c.desde + ' a ' + c.hasta + ' hs' }}</span>
+            @if (c.motivo) {
+              <em>{{ c.motivo }}</em>
+            }
+          </div>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="quitar(c)" [disabled]="quitando() === c.id">
+            {{ quitando() === c.id ? 'Quitando…' : 'Quitar' }}
+          </button>
+        </li>
+      } @empty {
+        <li class="estado">No hay cierres cargados.</li>
+      }
+    </ul>
+  }
+</section>

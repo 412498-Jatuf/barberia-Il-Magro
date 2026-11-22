@@ -13,4 +13,6 @@ public interface TurnoJpa extends JpaRepository<Turno, Long> {
     List<Turno> findByBarberoIdAndFechaAndEstado(Long barberoId, LocalDate fecha, EstadoTurno estado);
 
     Optional<Turno> findByCodigoCancelacion(String codigoCancelacion);
+
+    List<Turno> findByFechaBetweenOrderByFechaAscHoraInicioAsc(LocalDate desde, LocalDate hasta);
 }

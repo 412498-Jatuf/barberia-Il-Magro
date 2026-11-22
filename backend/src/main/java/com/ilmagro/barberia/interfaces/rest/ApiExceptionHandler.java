@@ -4,6 +4,7 @@ import com.ilmagro.barberia.application.shared.RecursoNoEncontradoException;
 import com.ilmagro.barberia.domain.agenda.TurnoNoDisponibleException;
 import com.ilmagro.barberia.domain.shared.DatoInvalidoException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -29,6 +30,13 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse turnoNoDisponible(TurnoNoDisponibleException e) {
         return new ErrorResponse(e.getMessage());
+    }
+
+    /** Login del panel con usuario o clave incorrectos: no se dice cual de los dos fallo. */
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse credencialesInvalidas(AuthenticationException e) {
+        return new ErrorResponse("Usuario o clave incorrectos");
     }
 
     @ExceptionHandler(RecursoNoEncontradoException.class)

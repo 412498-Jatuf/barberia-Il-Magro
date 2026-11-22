@@ -1,0 +1,74 @@
+<section class="bloque" aria-labelledby="turnos-h">
+  <div class="bloque__cabecera">
+    <h2 id="turnos-h">Próximos {{ diasAVer() }} días</h2>
+    <button type="button" class="accion" (click)="cargar()" [disabled]="cargando()">Actualizar</button>
+  </div>
+
+  @if (cargando()) {
+    <p class="estado">Cargando turnos…</p>
+  } @else if (error(); as e) {
+    <p class="estado error" role="alert">{{ e }}</p>
+  } @else {
+    @if (errorAccion(); as e) {
+      <p class="estado error" role="alert">{{ e }}</p>
+    }
+
+    @for (g of grupos(); track g.fecha) {
+      <h3 class="dia-titulo">{{ g.titulo }}</h3>
+      <ul class="lista" role="list">
+        @for (t of g.turnos; track t.id) {
+          <li class="turno" [class.cancelado]="t.estado === 'CANCELADO'">
+            <div class="turno__hora">{{ t.horaInicio }}</div>
+            <div class="turno__datos">
+              <strong>{{ t.clienteNombre }}</strong>
+              <span>{{ t.servicio }} · hasta las {{ t.horaFin }} hs</span>
+              <a [href]="'tel:' + t.clienteTelefono">{{ t.clienteTelefono }}</a>
+              @if (t.notas) {
+                <em>“{{ t.notas }}”</em>
+              }
+            </div>
+
+            @if (t.estado === 'CANCELADO') {
+              <div class="turno__acciones">
+                <span class="chip">Cancelado</span>
+                @if (recientes().has(t.id)) {
+                  <a class="btn btn--primary btn--sm" [href]="avisoAlCliente(t)" target="_blank" rel="noopener">
+                    Avisar a {{ primerNombre(t) }} por WhatsApp
+                  </a>
+                }
+              </div>
+            } @else if (t.cancelable) {
+              <div class="turno__acciones">
+                @if (confirmando() === t.id) {
+                  <p class="confirmar">¿Cancelar este turno? El horario queda libre.</p>
+                  <div class="fila">
+                    <button type="button" class="btn btn--primary btn--sm" (click)="cancelar(t)"
+                            [disabled]="cancelando() === t.id">
+                      {{ cancelando() === t.id ? 'Cancelando…' : 'Sí, cancelar' }}
+                    </button>
+                    <button type="button" class="btn btn--secondary btn--sm" (click)="confirmando.set(null)"
+                            [disabled]="cancelando() === t.id">No</button>
+                  </div>
+                } @else {
+                  <button type="button" class="btn btn--secondary btn--sm" (click)="confirmando.set(t.id)">
+                    Cancelar turno
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="turno__acciones"><span class="chip">Ya pasó</span></div>
+            }
+          </li>
+        }
+      </ul>
+    } @empty {
+      <p class="estado">No hay turnos reservados en los próximos {{ diasAVer() }} días.</p>
+    }
+
+    @if (cantidadCancelados() > 0) {
+      <button type="button" class="accion" (click)="verCancelados.set(!verCancelados())">
+        {{ verCancelados() ? 'Ocultar cancelados' : 'Ver cancelados (' + cantidadCancelados() + ')' }}
+      </button>
+    }
+  }
+</section>

@@ -29,6 +29,16 @@ class JpaTurnoRepository implements TurnoRepository {
     }
 
     @Override
+    public Optional<Turno> buscarPorId(Long id) {
+        return jpa.findById(id);
+    }
+
+    @Override
+    public List<Turno> turnosEntre(LocalDate desde, LocalDate hasta) {
+        return jpa.findByFechaBetweenOrderByFechaAscHoraInicioAsc(desde, hasta);
+    }
+
+    @Override
     public Optional<Turno> buscarPorCodigoCancelacion(String codigo) {
         return jpa.findByCodigoCancelacion(codigo);
     }

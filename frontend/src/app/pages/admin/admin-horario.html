@@ -1,0 +1,77 @@
+<section class="bloque" aria-labelledby="horario-h">
+  <div class="bloque__cabecera">
+    <h2 id="horario-h">Horario de la semana</h2>
+  </div>
+  <p class="ayuda">Elegí qué días atendés y en qué horas. Para hacer una pausa, agregá un segundo tramo.</p>
+
+  @if (cargando()) {
+    <p class="estado">Cargando horario…</p>
+  } @else if (dias().length === 0 && error(); as e) {
+    <p class="estado error" role="alert">{{ e }}</p>
+  } @else {
+    <ul class="semana" role="list">
+      @for (d of dias(); track d.dia) {
+        <li class="dia-fila" [class.cerrado]="!d.abierto">
+          <div class="dia-fila__cabecera">
+            <strong>{{ nombre(d.dia) }}</strong>
+            <button type="button" class="interruptor" role="switch" [attr.aria-checked]="d.abierto"
+                    [attr.aria-label]="nombre(d.dia) + ': ' + (d.abierto ? 'abierto' : 'cerrado')"
+                    (click)="alternarDia(d)">
+              <span class="interruptor__pista"><span class="interruptor__perilla"></span></span>
+              <span class="interruptor__texto">{{ d.abierto ? 'Abierto' : 'Cerrado' }}</span>
+            </button>
+          </div>
+
+          @if (d.abierto) {
+            <ul class="tramos" role="list">
+              @for (t of d.tramos; track $index) {
+                <li class="tramo">
+                  <label>
+                    <span>Desde</span>
+                    <input type="time" [value]="t.desde" step="900"
+                           (change)="cambiarHora(d, $index, 'desde', $any($event.target).value)" />
+                  </label>
+                  <label>
+                    <span>Hasta</span>
+                    <input type="time" [value]="t.hasta" step="900"
+                           (change)="cambiarHora(d, $index, 'hasta', $any($event.target).value)" />
+                  </label>
+                  @if (d.tramos.length > 1) {
+                    <button type="button" class="accion quitar" (click)="quitarTramo(d, $index)"
+                            [attr.aria-label]="'Quitar el tramo ' + ($index + 1) + ' del ' + nombre(d.dia)">Quitar</button>
+                  }
+                </li>
+              }
+            </ul>
+            @if (problemas().get(d.dia); as p) {
+              <p class="estado error" role="alert">{{ p }}</p>
+            }
+            @if (d.tramos.length < maxTramos) {
+              <button type="button" class="accion" (click)="agregarTramo(d)">
+                {{ d.tramos.length ? '+ Agregar otro tramo (pausa)' : '+ Agregar horario' }}
+              </button>
+            }
+          }
+        </li>
+      }
+    </ul>
+
+    @if (error(); as e) {
+      <p class="estado error" role="alert">{{ e }}</p>
+    }
+    @if (recienGuardado()) {
+      <p class="estado ok" role="status">Horario guardado. Ya lo ven los clientes al reservar.</p>
+    }
+    <app-admin-afectados [turnos]="afectados()" />
+
+    <div class="barra-guardar">
+      <button type="button" class="btn btn--primary" (click)="guardar()"
+              [disabled]="guardando() || !sinGuardar() || hayProblemas()">
+        {{ guardando() ? 'Guardando…' : 'Guardar horario' }}
+      </button>
+      @if (sinGuardar() && !guardando()) {
+        <span class="estado">Hay cambios sin guardar.</span>
+      }
+    </div>
+  }
+</section>

@@ -23,7 +23,7 @@ class LimiteDePedidosFilterTest {
     }
 
     private final Reloj reloj = new Reloj();
-    private final LimiteDePedidosFilter filtro = new LimiteDePedidosFilter(3, 30, reloj);
+    private final LimiteDePedidosFilter filtro = new LimiteDePedidosFilter(3, 30, 5, reloj);
 
     private int reservarDesde(String ip) throws Exception {
         MockHttpServletRequest req = new MockHttpServletRequest("POST", "/api/turnos");
@@ -46,6 +46,23 @@ class LimiteDePedidosFilterTest {
         // pasada la hora, vuelve a poder
         reloj.ahora = reloj.ahora.plus(Duration.ofMinutes(61));
         assertThat(reservarDesde("1.1.1.1")).isEqualTo(200);
+    }
+
+    @Test
+    void cortaLosIntentosDeLoginDeUnaIp() throws Exception {
+        for (int i = 0; i < 5; i++) {
+            assertThat(loginDesde("3.3.3.3")).isEqualTo(200);
+        }
+        assertThat(loginDesde("3.3.3.3")).isEqualTo(429);
+        assertThat(loginDesde("4.4.4.4")).isEqualTo(200);
+    }
+
+    private int loginDesde(String ip) throws Exception {
+        MockHttpServletRequest req = new MockHttpServletRequest("POST", "/api/admin/login");
+        req.setRemoteAddr(ip);
+        MockHttpServletResponse res = new MockHttpServletResponse();
+        filtro.doFilter(req, res, new MockFilterChain());
+        return res.getStatus();
     }
 
     @Test

@@ -59,7 +59,13 @@
               </div>
             </div>
             <ul class="visit__rows">
-              <li><span>Barbero</span><span>{{ nombresBarberos() }}</span></li>
+              <li class="visit__barbero">
+                <span>Barbero</span>
+                <span class="barbero">
+                  <img src="assets/img/luca.jpg" width="480" height="480" alt="Luca Fracassi, barbero de Il Magro" loading="lazy" decoding="async">
+                  {{ nombresBarberos() }}
+                </span>
+              </li>
               <li><span>Pago</span><span>En el local, al terminar</span></li>
               @if (whatsapp) {
                 <li><span>Consultas</span><a class="link" [href]="whatsapp" target="_blank" rel="noopener">WhatsApp</a></li>
@@ -67,8 +73,8 @@
             </ul>
           </div>
           <figure class="pl-photo span-3 start-10" style="--pl-r: .75">
-            <img src="assets/img/local-mesa.jpg" width="291" height="389"
-                 alt="El puesto de trabajo: máquinas, peines y tijeras sobre la mesada, frente al espejo con aros de luz"
+            <img src="assets/img/local-puesto.jpg" width="900" height="1200"
+                 alt="El puesto de trabajo de Il Magro: máquinas, peines y tijeras sobre la mesada, frente al espejo, con el cartel de la barbería y la capa sobre el sillón"
                  loading="lazy" decoding="async">
           </figure>
         </div>

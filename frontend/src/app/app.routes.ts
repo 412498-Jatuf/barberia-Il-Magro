@@ -13,5 +13,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/cancelar/cancelar').then((m) => m.Cancelar),
     title: 'Cancelar turno · Il Magro',
   },
+  {
+    // Panel privado de Luca: no se linkea desde el sitio; lo protege el login del servidor
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/admin').then((m) => m.Admin),
+    title: 'Panel · Il Magro',
+  },
   { path: '**', redirectTo: '' },
 ];

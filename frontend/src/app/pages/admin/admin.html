@@ -1,0 +1,34 @@
+<div class="admin">
+  <div class="container">
+    @if (admin.usuario() === undefined) {
+      <p class="estado centro">Cargando…</p>
+    } @else if (admin.usuario() === null) {
+      <app-admin-login />
+    } @else {
+      <header class="admin__cabecera">
+        <div class="admin__saludo">
+          <img class="admin__foto" src="assets/img/luca.jpg" width="480" height="480" alt="Luca Fracassi" decoding="async">
+          <div>
+            <p class="etiqueta">Panel de administración</p>
+            <h1>Hola, {{ admin.usuario() }}</h1>
+          </div>
+        </div>
+        <button type="button" class="btn btn--secondary btn--sm" (click)="salir()">Salir</button>
+      </header>
+
+      <div class="pestanas" role="tablist" aria-label="Secciones del panel">
+        @for (p of pestanas; track p.id) {
+          <button type="button" role="tab" [attr.aria-selected]="pestana() === p.id"
+                  [class.sel]="pestana() === p.id" (click)="pestana.set(p.id)">{{ p.nombre }}</button>
+        }
+      </div>
+
+      <!-- cada pestana se arma al abrirla, asi siempre muestra lo ultimo guardado -->
+      @switch (pestana()) {
+        @case ('turnos') { <app-admin-turnos /> }
+        @case ('horario') { <app-admin-horario /> }
+        @case ('cierres') { <app-admin-cierres /> }
+      }
+    }
+  </div>
+</div>

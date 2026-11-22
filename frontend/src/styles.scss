@@ -350,5 +350,38 @@ h2 {
 }
 
 /* precios y cortes van seguidos: precios mide lo que su contenido (no una pantalla entera) */
-main > section#servicios { height: auto; min-height: 0; padding-bottom: var(--s-7, 64px); }
+/* la barberia crece con su contenido (la foto nueva es alta): sin alto fijo no se mete en la seccion de abajo */
+main > section#visit { height: auto; min-height: 0; padding-bottom: 24px; }
+main > section#servicios { height: auto; min-height: 0; padding-top: 72px; padding-bottom: var(--s-7, 64px); }
 main > section#cortes { padding-top: var(--s-7, 64px); }
+
+/* panel privado /admin: sin los links, el boton de reservar, el pie ni la barra de abajo del sitio publico;
+   solo queda el logo arriba */
+body.es-admin {
+  footer.closing,
+  .actionbar,
+  header.nav .nav__links,
+  header.nav .nav__actions,
+  header.nav .nav__toggle {
+    display: none;
+  }
+
+  header.nav .nav__bar {
+    justify-content: center;
+  }
+}
+
+/* la fila "Barbero": el retrato de Luca, redondo y con el filete dorado del logo */
+.barbero {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.barbero img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #000;
+  box-shadow: 0 0 0 1px rgb(201 169 110 / 0.7);
+}
