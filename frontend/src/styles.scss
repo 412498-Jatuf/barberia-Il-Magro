@@ -328,3 +328,27 @@ h2 {
   .ochenta__datos { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--s-5); }
 }
 
+
+/* el lema como titulo de la seccion de cortes: Bodoni grande, la segunda linea en italica dorada */
+.section-head .lema {
+  margin: 0;
+  font: var(--display-weight, 400) clamp(38px, 4.6vw, 68px) / 1.06 var(--font-display);
+  letter-spacing: var(--display-tracking, -0.01em);
+  color: var(--p-ink);
+
+  em {
+    font-style: italic;
+    /* la italica se sale de su caja: el relleno evita que el dorado corte las letras */
+    display: inline-block;
+    padding: 0 0.1em 0 0.15em;
+    margin-left: -0.15em;
+    background: var(--oro-x);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* precios y cortes van seguidos: precios mide lo que su contenido (no una pantalla entera) */
+main > section#servicios { height: auto; min-height: 0; padding-bottom: var(--s-7, 64px); }
+main > section#cortes { padding-top: var(--s-7, 64px); }

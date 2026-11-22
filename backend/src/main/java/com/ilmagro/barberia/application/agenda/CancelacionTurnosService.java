@@ -1,13 +1,11 @@
 package com.ilmagro.barberia.application.agenda;
 
 import com.ilmagro.barberia.application.shared.RecursoNoEncontradoException;
-import com.ilmagro.barberia.domain.agenda.AgendaService;
 import com.ilmagro.barberia.domain.agenda.Turno;
 import com.ilmagro.barberia.domain.agenda.TurnoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 
 /**
@@ -18,24 +16,22 @@ import java.time.LocalDateTime;
 public class CancelacionTurnosService {
 
     private final TurnoRepository turnos;
-    private final AgendaService agenda;
-    private final Clock clock;
+    private final RelojBarberia reloj;
 
-    public CancelacionTurnosService(TurnoRepository turnos, AgendaService agenda, Clock clock) {
+    public CancelacionTurnosService(TurnoRepository turnos, RelojBarberia reloj) {
         this.turnos = turnos;
-        this.agenda = agenda;
-        this.clock = clock;
+        this.reloj = reloj;
     }
 
     @Transactional(readOnly = true)
     public TurnoParaCancelar consultar(String codigo) {
-        return TurnoParaCancelar.de(buscar(codigo), ahora());
+        return TurnoParaCancelar.de(buscar(codigo), reloj.ahora());
     }
 
     @Transactional
     public TurnoParaCancelar cancelar(String codigo) {
         Turno turno = buscar(codigo);
-        LocalDateTime ahora = ahora();
+        LocalDateTime ahora = reloj.ahora();
         turno.cancelar(ahora);
         return TurnoParaCancelar.de(turnos.guardar(turno), ahora);
     }
@@ -46,9 +42,5 @@ public class CancelacionTurnosService {
         }
         return turnos.buscarPorCodigoCancelacion(codigo)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Turno no encontrado"));
-    }
-
-    private LocalDateTime ahora() {
-        return LocalDateTime.now(clock.withZone(agenda.horario().zona()));
     }
 }

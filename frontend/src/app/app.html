@@ -8,7 +8,7 @@
           <p class="ochenta__kicker"><svg class="monio" viewBox="0 0 40 16" aria-hidden="true"><path d="M20 8 L3 1.5 C1 1 0 2 0 4 V12 C0 14 1 15 3 14.5 Z M20 8 L37 1.5 C39 1 40 2 40 4 V12 C40 14 39 15 37 14.5 Z" /><rect x="16.5" y="4.5" width="7" height="7" rx="1.6" /></svg>Av. Pueyrredón · Córdoba</p>
           <h1 id="hero-h">Barbería <em>Il Magro</em></h1>
           <p class="ochenta__frase">Tu corte, a medida.</p>
-          <p class="hero__lead">Fades, flequillos y cortes a tijera de {{ b.barbero }}. Reservás online y pagás en el local.</p>
+          <p class="hero__lead">Degradados, cortes clásicos y trabajos a tijera. Una atención personalizada para encontrar el estilo que mejor acompaña tus facciones y personalidad. Reservás online y pagás en el local.</p>
           <div class="btn-row"><a class="btn btn--primary" routerLink="/turnos">Reservar turno</a></div>
         </div>
         <!-- la escena: un arco clasico con doble filete dorado, luz de gala desde arriba y la silueta
@@ -113,8 +113,7 @@
       <section class="section" id="cortes" style="--hm: 2" aria-labelledby="cortes-h">
         <div class="wrap">
           <div class="section-head">
-            <h2 id="cortes-h">Cortes de Il Magro</h2>
-            <p>Traé una foto de referencia o elegí uno de estos; lo ajustamos a tu forma de cabeza y a cómo te peinás.</p>
+            <h2 id="cortes-h" class="lema">Menos tendencias.<br><em>Más identidad.</em></h2>
           </div>
           <ul class="galeria" role="list">
             @for (c of datos.cortes(); track c.id) {

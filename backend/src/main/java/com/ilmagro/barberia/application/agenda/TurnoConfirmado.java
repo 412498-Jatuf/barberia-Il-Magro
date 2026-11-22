@@ -23,7 +23,8 @@ public record TurnoConfirmado(
         LocalDate fecha,
         LocalTime horaInicio,
         LocalTime horaFin,
-        String notas
+        String notas,
+        String codigoCancelacion
 ) {
     static TurnoConfirmado de(Turno turno) {
         return new TurnoConfirmado(
@@ -38,6 +39,7 @@ public record TurnoConfirmado(
                 turno.getFecha(),
                 turno.getHoraInicio(),
                 turno.getHoraFin(),
-                turno.getNotas());
+                turno.getNotas(),
+                turno.getCodigoCancelacion());
     }
 }

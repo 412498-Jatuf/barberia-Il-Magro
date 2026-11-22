@@ -31,14 +31,3 @@ export const NOMBRES_DIAS = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Vie
 export function fechaLarga(iso: string): string {
   return desdeIsoLocal(iso).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 }
-
-/** "Martes a sábado" a partir de [2,3,4,5,6]. */
-export function describirDias(dias: number[]): string {
-  if (!dias.length) return '';
-  const ordenados = [...dias].sort((a, b) => a - b);
-  const consecutivos = ordenados.every((d, i) => i === 0 || d === ordenados[i - 1] + 1);
-  if (consecutivos && ordenados.length > 2) {
-    return `${NOMBRES_DIAS[ordenados[0]]} a ${NOMBRES_DIAS[ordenados.at(-1)!].toLowerCase()}`;
-  }
-  return ordenados.map((d) => NOMBRES_DIAS[d]).join(', ');
-}

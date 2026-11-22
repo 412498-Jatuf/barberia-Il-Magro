@@ -38,7 +38,7 @@ class AvisoWhatsapp implements AvisoDeTurno {
     public void avisar(TurnoConfirmado turno) throws Exception {
         String url = "https://api.callmebot.com/whatsapp.php"
                 + "?phone=" + enc(props.whatsapp().telefono())
-                + "&text=" + enc(MensajeTurno.texto(turno))
+                + "&text=" + enc(MensajeTurno.texto(turno, props.sitio()))
                 + "&apikey=" + enc(props.whatsapp().apikey());
         HttpRequest req = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(20)).GET().build();
         HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString());

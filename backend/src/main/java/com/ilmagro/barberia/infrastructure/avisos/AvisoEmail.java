@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Aviso por email a la barberia. Se activa si hay destinatario (barberia.avisos.email.para, env
- * AVISO_EMAIL_PARA) y servidor de correo (spring.mail.host, env MAIL_HOST; con Gmail: smtp.gmail.com
- * y una "contraseña de aplicacion").
+ * AVISO_EMAIL_PARA) y servidor de correo (spring.mail.host, env MAIL_HOST; con Brevo:
+ * smtp-relay.brevo.com y la SMTP key; con Gmail: smtp.gmail.com y una "contraseña de aplicacion").
  */
 @Component
 @ConditionalOnExpression("'${barberia.avisos.email.para:}' != '' and '${spring.mail.host:}' != ''")
@@ -40,7 +40,7 @@ class AvisoEmail implements AvisoDeTurno {
             m.setReplyTo(turno.clienteEmail());
         }
         m.setSubject(MensajeTurno.asunto(turno));
-        m.setText(MensajeTurno.texto(turno));
+        m.setText(MensajeTurno.texto(turno, props.sitio()));
         mail.send(m);
     }
 }

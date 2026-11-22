@@ -39,6 +39,8 @@ class ReservaTurnosServiceTest {
     @Autowired
     ReservaTurnosService reservas;
     @Autowired
+    DisponibilidadService disponibilidad;
+    @Autowired
     BarberoRepository barberos;
     @Autowired
     ServicioRepository servicios;
@@ -55,7 +57,7 @@ class ReservaTurnosServiceTest {
 
         assertThat(turno.id()).isNotNull();
         assertThat(turno.horaFin()).isEqualTo(LocalTime.of(18, 30));
-        assertThat(reservas.horariosDisponibles(MARTES, barberoId, comboId))
+        assertThat(disponibilidad.horariosDisponibles(MARTES, barberoId, comboId))
                 .doesNotContain(LocalTime.of(18, 0))
                 .contains(LocalTime.of(17, 30), LocalTime.of(18, 30));
 

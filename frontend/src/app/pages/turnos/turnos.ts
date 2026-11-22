@@ -1,22 +1,23 @@
-import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Subscription, forkJoin } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { BARBERIA } from '../../core/barberia.config';
-import { aIsoLocal, diaIso, fechaLarga, formatearPrecio } from '../../core/formato';
-import { ApiError, Barbero, Horario, Servicio, TurnoReservado } from '../../core/models';
-import { linkWhatsapp, mensajeTurno } from '../../core/mensaje-turno';
+import { DatosService } from '../../core/datos.service';
+import { proximosDias } from '../../core/dias-de-turno';
+import { fechaLarga, formatearPrecio } from '../../core/formato';
+import { DatosCliente, mensajeTurno } from '../../core/mensaje-turno';
+import { ApiError, Barbero, Servicio, TurnoReservado } from '../../core/models';
+import { WhatsappService } from '../../core/whatsapp.service';
 
-interface DiaOpcion {
-  iso: string;
-  diaSemana: string;
-  numero: number;
-  mes: string;
-}
-
+/**
+ * Pagina de reserva: el cliente elige servicio, dia y hora, deja sus datos y al confirmar se le abre
+ * WhatsApp con el turno escrito para Luca. Los datos de la barberia vienen de DatosService (cargados
+ * una sola vez para todo el sitio); los dias salen de proximosDias y el chat lo abre WhatsappService.
+ */
 @Component({
   selector: 'app-turnos',
   imports: [ReactiveFormsModule, RouterLink],
@@ -25,6 +26,8 @@ interface DiaOpcion {
 })
 export class Turnos implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly datos = inject(DatosService);
+  private readonly whatsapp = inject(WhatsappService);
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -35,15 +38,26 @@ export class Turnos implements OnInit {
   protected readonly precio = formatearPrecio;
   protected readonly fechaLarga = fechaLarga;
 
-  protected readonly cargandoDatos = signal(true);
-  protected readonly errorDatos = signal(false);
-  protected readonly servicios = signal<Servicio[]>([]);
-  protected readonly barberos = signal<Barbero[]>([]);
-  protected readonly horario = signal<Horario | null>(null);
-
-  protected readonly servicioSel = signal<Servicio | null>(null);
-  protected readonly barberoSel = signal<Barbero | null>(null);
+  protected readonly cargandoDatos = computed(() => !this.datos.listo());
+  protected readonly errorDatos = this.datos.error;
+  protected readonly servicios = this.datos.servicios;
+  protected readonly barberos = this.datos.barberos;
   protected readonly variosBarberos = computed(() => this.barberos().length > 1);
+  /** Proximos dias en los que la barberia atiende. */
+  protected readonly dias = computed(() => {
+    const h = this.datos.horario();
+    return h ? proximosDias(h) : [];
+  });
+
+  /** Arranca con el servicio que vino de la landing; despues lo cambia el cliente. */
+  protected readonly servicioSel = linkedSignal<Servicio | null>(
+    () => this.servicios().find((s) => String(s.id) === this.servicio()) ?? null,
+  );
+  /** Si hay un solo barbero queda elegido de entrada. */
+  protected readonly barberoSel = linkedSignal<Barbero | null>(() => {
+    const todos = this.barberos();
+    return todos.length === 1 ? todos[0] : null;
+  });
   protected readonly fechaSel = signal<string | null>(null);
   protected readonly horaSel = signal<string | null>(null);
 
@@ -68,50 +82,13 @@ export class Turnos implements OnInit {
     notas: ['', [Validators.maxLength(500)]],
   });
 
-  /** Proximos dias en los que la barberia atiende. */
-  protected readonly dias = computed<DiaOpcion[]>(() => {
-    const h = this.horario();
-    if (!h) return [];
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const opciones: DiaOpcion[] = [];
-    for (let i = 0; i <= h.diasAnticipacion; i++) {
-      const d = new Date(hoy);
-      d.setDate(hoy.getDate() + i);
-      if (!h.diasAtencion.includes(diaIso(d))) continue;
-      opciones.push({
-        iso: aIsoLocal(d),
-        diaSemana: i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : d.toLocaleDateString('es-AR', { weekday: 'short' }),
-        numero: d.getDate(),
-        mes: d.toLocaleDateString('es-AR', { month: 'short' }),
-      });
-    }
-    return opciones;
-  });
-
   protected readonly listoParaConfirmar = computed(
     () => !!(this.servicioSel() && this.barberoSel() && this.fechaSel() && this.horaSel()),
   );
 
   ngOnInit(): void {
-    forkJoin({ servicios: this.api.servicios(), barberos: this.api.barberos(), horario: this.api.horario() })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: ({ servicios, barberos, horario }) => {
-          this.servicios.set(servicios);
-          this.barberos.set(barberos);
-          this.horario.set(horario);
-          this.cargandoDatos.set(false);
-
-          const preseleccion = servicios.find((s) => String(s.id) === this.servicio());
-          if (preseleccion) this.servicioSel.set(preseleccion);
-          if (barberos.length === 1) this.barberoSel.set(barberos[0]);
-        },
-        error: () => {
-          this.cargandoDatos.set(false);
-          this.errorDatos.set(true);
-        },
-      });
+    // la raiz ya los pide; si se entra directo a /turnos, esto no repite el pedido
+    this.datos.cargar();
   }
 
   protected elegirServicio(s: Servicio): void {
@@ -169,31 +146,28 @@ export class Turnos implements OnInit {
     const h = this.horaSel();
     if (this.form.invalid || !s || !b || !f || !h || this.enviando()) return;
 
-    const v = this.form.getRawValue();
+    const nombre = this.form.controls.nombre.value.trim();
+    const cliente = this.datosCliente();
     this.enviando.set(true);
     this.errorEnvio.set(null);
 
     this.api
       .reservar({
-        clienteNombre: v.nombre.trim(),
-        clienteTelefono: v.telefono.trim(),
-        clienteEmail: v.email.trim() || null,
+        clienteNombre: nombre,
+        clienteTelefono: cliente.telefono,
+        clienteEmail: cliente.email,
         servicioId: s.id,
         barberoId: b.id,
         fecha: f,
         hora: h,
-        notas: v.notas.trim() || null,
+        notas: cliente.notas,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (turno) => {
           this.enviando.set(false);
           this.confirmado.set(turno);
-          this.enviarALuca(turno, {
-            telefono: v.telefono.trim(),
-            email: v.email.trim() || null,
-            notas: v.notas.trim() || null,
-          }, s.duracionMinutos);
+          this.enviarALuca(turno, cliente, s.duracionMinutos);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err: HttpErrorResponse) => {
@@ -214,17 +188,25 @@ export class Turnos implements OnInit {
     this.refrescarHorarios();
   }
 
+  /** Los datos del formulario ya limpios (sin espacios de mas, vacios como null). */
+  private datosCliente(): DatosCliente {
+    const v = this.form.getRawValue();
+    return {
+      telefono: v.telefono.trim(),
+      email: v.email.trim() || null,
+      notas: v.notas.trim() || null,
+    };
+  }
+
   /**
    * Abre WhatsApp con el mensaje del turno para Luca (el cliente solo toca Enviar). Se llama apenas
    * responde el backend, todavia dentro del permiso del click; si el navegador igual lo bloquea,
    * la confirmacion muestra el boton grande para abrirlo a mano.
    */
-  private enviarALuca(turno: TurnoReservado, cliente: Parameters<typeof mensajeTurno>[1], duracion: number): void {
+  private enviarALuca(turno: TurnoReservado, cliente: DatosCliente, duracion: number): void {
     if (!this.b.whatsapp) return;
-    const url = linkWhatsapp(this.b.whatsapp, mensajeTurno(turno, cliente, duracion, this.b.nombre));
-    this.linkTurno.set(url);
-    const ventana = window.open(url, '_blank');
-    if (ventana) ventana.opener = null;
-    this.wspAbierto.set(!!ventana);
+    const chat = this.whatsapp.abrirChat(this.b.whatsapp, mensajeTurno(turno, cliente, duracion, this.b.nombre));
+    this.linkTurno.set(chat.url);
+    this.wspAbierto.set(chat.abierto);
   }
 }

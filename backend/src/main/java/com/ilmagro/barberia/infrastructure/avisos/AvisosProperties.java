@@ -2,9 +2,12 @@ package com.ilmagro.barberia.infrastructure.avisos;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** Configuracion de los avisos de turnos nuevos (barberia.avisos.* en application.properties). */
+/**
+ * Configuracion de los avisos de turnos nuevos (barberia.avisos.* en application.properties).
+ * sitio: direccion publica del sitio (ej. https://ilmagro.com.ar), para armar el link de cancelacion.
+ */
 @ConfigurationProperties("barberia.avisos")
-public record AvisosProperties(Whatsapp whatsapp, Email email) {
+public record AvisosProperties(Whatsapp whatsapp, Email email, String sitio) {
 
     public AvisosProperties {
         whatsapp = whatsapp == null ? new Whatsapp(null, null) : whatsapp;

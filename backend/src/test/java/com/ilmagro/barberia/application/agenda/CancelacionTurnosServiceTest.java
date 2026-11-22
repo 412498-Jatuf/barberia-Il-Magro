@@ -38,6 +38,8 @@ class CancelacionTurnosServiceTest {
     @Autowired
     ReservaTurnosService reservas;
     @Autowired
+    DisponibilidadService disponibilidad;
+    @Autowired
     CancelacionTurnosService cancelaciones;
     @Autowired
     BarberoRepository barberos;
@@ -53,7 +55,7 @@ class CancelacionTurnosServiceTest {
         TurnoReservado turno = reservas.reservar(new ReservarTurnoCommand("Ana Gomez", "351 555 0101",
                 null, corteId, barberoId, JUEVES, hora, null));
         assertThat(turno.codigoCancelacion()).hasSize(24);
-        assertThat(reservas.horariosDisponibles(JUEVES, barberoId, corteId)).doesNotContain(hora);
+        assertThat(disponibilidad.horariosDisponibles(JUEVES, barberoId, corteId)).doesNotContain(hora);
 
         TurnoParaCancelar antes = cancelaciones.consultar(turno.codigoCancelacion());
         assertThat(antes.cancelable()).isTrue();
@@ -61,7 +63,7 @@ class CancelacionTurnosServiceTest {
         TurnoParaCancelar despues = cancelaciones.cancelar(turno.codigoCancelacion());
         assertThat(despues.estado()).isEqualTo("CANCELADO");
         assertThat(despues.cancelable()).isFalse();
-        assertThat(reservas.horariosDisponibles(JUEVES, barberoId, corteId)).contains(hora);
+        assertThat(disponibilidad.horariosDisponibles(JUEVES, barberoId, corteId)).contains(hora);
 
         // cancelar de nuevo no falla
         assertThat(cancelaciones.cancelar(turno.codigoCancelacion()).estado()).isEqualTo("CANCELADO");

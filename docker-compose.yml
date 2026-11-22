@@ -7,9 +7,11 @@ services:
     environment:
       POSTGRES_DB: ilmagro
       POSTGRES_USER: ilmagro
+      # contraseña solo para desarrollo local (la misma de application-dev.properties)
       POSTGRES_PASSWORD: ilmagro
     ports:
-      - "5433:5432"
+      # solo desde esta compu: la base no queda abierta al resto de la red
+      - "127.0.0.1:5433:5432"
     volumes:
       - ilmagro-data:/var/lib/postgresql
 

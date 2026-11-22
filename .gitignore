@@ -8,6 +8,7 @@ skills-lock.json
 # Entornos y secretos
 .env
 .env.*
+!.env.ejemplo
 
 # Salidas de las pruebas de diseño (perfil de Chrome, reportes, capturas)
 .taste-skill/

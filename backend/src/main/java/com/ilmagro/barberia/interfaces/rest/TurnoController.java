@@ -1,6 +1,7 @@
 package com.ilmagro.barberia.interfaces.rest;
 
 import com.ilmagro.barberia.application.agenda.CancelacionTurnosService;
+import com.ilmagro.barberia.application.agenda.DisponibilidadService;
 import com.ilmagro.barberia.application.agenda.ReservaTurnosService;
 import com.ilmagro.barberia.interfaces.rest.dto.AgendaDtos;
 import com.ilmagro.barberia.interfaces.rest.dto.AgendaDtos.CancelacionResponse;
@@ -19,17 +20,20 @@ import java.util.List;
 @RequestMapping("/api")
 public class TurnoController {
 
+    private final DisponibilidadService disponibilidad;
     private final ReservaTurnosService reservas;
     private final CancelacionTurnosService cancelaciones;
 
-    public TurnoController(ReservaTurnosService reservas, CancelacionTurnosService cancelaciones) {
+    public TurnoController(DisponibilidadService disponibilidad, ReservaTurnosService reservas,
+                           CancelacionTurnosService cancelaciones) {
+        this.disponibilidad = disponibilidad;
         this.reservas = reservas;
         this.cancelaciones = cancelaciones;
     }
 
     @GetMapping("/horario")
     public HorarioResponse horario() {
-        return HorarioResponse.de(reservas.horarioDeAtencion());
+        return HorarioResponse.de(disponibilidad.horarioDeAtencion());
     }
 
     /** Horarios de inicio libres, en formato HH:mm. */
@@ -37,7 +41,7 @@ public class TurnoController {
     public List<String> disponibles(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
                                     @RequestParam Long barberoId,
                                     @RequestParam Long servicioId) {
-        return reservas.horariosDisponibles(fecha, barberoId, servicioId).stream().map(AgendaDtos::hhmm).toList();
+        return disponibilidad.horariosDisponibles(fecha, barberoId, servicioId).stream().map(AgendaDtos::hhmm).toList();
     }
 
     @PostMapping("/turnos")
