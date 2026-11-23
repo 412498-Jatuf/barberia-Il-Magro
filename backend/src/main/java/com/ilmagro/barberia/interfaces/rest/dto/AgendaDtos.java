@@ -54,11 +54,12 @@ public final class AgendaDtos {
             @NotNull Long barberoId,
             @NotNull LocalDate fecha,
             @NotNull LocalTime hora,
-            @Size(max = 500) String notas
+            @Size(max = 500) String notas,
+            @Pattern(regexp = "^(email|whatsapp)$", message = "canal de aviso invalido") String avisoPor
     ) {
         public ReservarTurnoCommand aComando() {
             return new ReservarTurnoCommand(clienteNombre, clienteTelefono, clienteEmail, servicioId, barberoId,
-                    fecha, hora, notas);
+                    fecha, hora, notas, avisoPor);
         }
     }
 

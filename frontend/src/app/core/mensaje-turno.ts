@@ -33,15 +33,8 @@ export function mensajeTurno(
     `*Día:* ${dia.charAt(0).toUpperCase()}${dia.slice(1)}`,
     `*Hora:* ${t.horaInicio} a ${t.horaFin} hs`,
     ...(cliente.notas ? [`*Comentarios:* ${cliente.notas}`] : []),
-    '',
-    `Si se cancela, el horario se libera acá: ${linkCancelacion(t.codigoCancelacion)}`,
   ];
   return renglones.join('\n');
-}
-
-/** Link a la pagina que cancela el turno y libera el horario. */
-export function linkCancelacion(codigo: string): string {
-  return `${location.origin}/cancelar/${codigo}`;
 }
 
 /** Link wa.me que abre el chat con el barbero y el mensaje ya escrito. */

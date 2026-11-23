@@ -59,7 +59,7 @@ public class ReservaTurnosService {
         Turno turno = turnos.guardar(
                 Turno.reservar(cliente, servicio, barbero, cmd.fecha(), cmd.hora(), cmd.notas(), ahora));
         // los avisos a la barberia salen recien cuando la transaccion se confirma (AvisosListener)
-        eventos.publishEvent(TurnoConfirmado.de(turno));
+        eventos.publishEvent(TurnoConfirmado.de(turno, cmd.avisoPor()));
         return TurnoReservado.de(turno);
     }
 }

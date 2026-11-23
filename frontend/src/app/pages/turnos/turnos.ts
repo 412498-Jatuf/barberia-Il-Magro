@@ -10,7 +10,7 @@ import { DatosService } from '../../core/datos.service';
 import { proximosDias } from '../../core/dias-de-turno';
 import { fechaLarga, formatearPrecio } from '../../core/formato';
 import { DatosCliente, mensajeTurno } from '../../core/mensaje-turno';
-import { ApiError, Barbero, Servicio, TurnoReservado } from '../../core/models';
+import { ApiError, AvisoPor, Barbero, Servicio, TurnoReservado } from '../../core/models';
 import { WhatsappService } from '../../core/whatsapp.service';
 
 /**
@@ -73,6 +73,9 @@ export class Turnos implements OnInit {
   /** Si el navegador dejo abrir WhatsApp solo; si no, la confirmacion muestra el boton primero. */
   protected readonly wspAbierto = signal(false);
 
+  /** El canal con el que se confirmo el turno (para el mensaje de la confirmacion). */
+  protected readonly avisoElegido = signal<AvisoPor>('whatsapp');
+
   private horariosSub?: Subscription;
 
   protected readonly form = this.fb.group({
@@ -80,7 +83,11 @@ export class Turnos implements OnInit {
     telefono: ['', [Validators.required, Validators.pattern(/^[+]?[0-9 ()-]{6,20}$/)]],
     email: ['', [Validators.email, Validators.maxLength(150)]],
     notas: ['', [Validators.maxLength(500)]],
+    avisoPor: ['whatsapp' as AvisoPor],
   });
+
+  /** Solo el nombre de pila del barbero ("Luca"), para hablarle al cliente sin el apellido. */
+  protected readonly primerNombreBarbero = computed(() => (this.barberoSel()?.nombre ?? 'Luca').split(' ')[0]);
 
   protected readonly listoParaConfirmar = computed(
     () => !!(this.servicioSel() && this.barberoSel() && this.fechaSel() && this.horaSel()),
@@ -148,6 +155,7 @@ export class Turnos implements OnInit {
 
     const nombre = this.form.controls.nombre.value.trim();
     const cliente = this.datosCliente();
+    const avisoPor = this.form.controls.avisoPor.value;
     this.enviando.set(true);
     this.errorEnvio.set(null);
 
@@ -161,13 +169,15 @@ export class Turnos implements OnInit {
         fecha: f,
         hora: h,
         notas: cliente.notas,
+        avisoPor,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (turno) => {
           this.enviando.set(false);
           this.confirmado.set(turno);
-          this.enviarALuca(turno, cliente, s.duracionMinutos);
+          this.avisoElegido.set(avisoPor);
+          if (avisoPor === 'whatsapp') this.enviarALuca(turno, cliente, s.duracionMinutos);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err: HttpErrorResponse) => {

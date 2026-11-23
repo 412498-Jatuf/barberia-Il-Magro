@@ -38,6 +38,7 @@ class AvisosListener {
     void alConfirmar(TurnoConfirmado turno) {
         log.info("Turno #{} confirmado: {} {} {}", turno.id(), turno.clienteNombre(), turno.fecha(), turno.horaInicio());
         for (AvisoDeTurno aviso : avisos) {
+            if (!corresponde(aviso, turno)) continue;
             try {
                 aviso.avisar(turno);
                 log.info("Aviso del turno #{} enviado por {}", turno.id(), aviso.canal());
@@ -45,5 +46,14 @@ class AvisosListener {
                 log.error("No se pudo avisar el turno #{} por {}: {}", turno.id(), aviso.canal(), e.getMessage(), e);
             }
         }
+    }
+
+    /**
+     * El cliente elige un solo canal: si eligio WhatsApp el aviso lo manda el mismo cliente desde su
+     * celular (wa.me) y el backend no manda nada; si eligio email, solo sale el mail.
+     */
+    private static boolean corresponde(AvisoDeTurno aviso, TurnoConfirmado turno) {
+        return turno.avisoPor() == null || turno.avisoPor().equalsIgnoreCase(aviso.canal())
+                && !"whatsapp".equalsIgnoreCase(turno.avisoPor());
     }
 }

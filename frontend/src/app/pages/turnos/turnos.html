@@ -6,7 +6,11 @@
         <div class="check" aria-hidden="true">✓</div>
         <h1>¡Turno confirmado!</h1>
         <p class="sub">Te esperamos, {{ t.clienteNombre }}. Tu turno ya está en la agenda de {{ t.barbero }}.</p>
-        @if (linkTurno(); as link) {
+        @if (avisoElegido() === 'email') {
+          <div class="aviso-wsp" role="status">
+            <p><strong>Le avisamos a {{ t.barbero.split(' ')[0] }} por mail.</strong> No tenés que hacer nada más.</p>
+          </div>
+        } @else if (linkTurno(); as link) {
           <div class="aviso-wsp" role="status">
             @if (wspAbierto()) {
               <p><strong>Se abrió WhatsApp con tu turno.</strong> Tocá <em>Enviar</em> para que le llegue a {{ t.barbero }}.</p>
@@ -138,6 +142,18 @@
                   <span>Comentarios <em>(opcional)</em></span>
                   <textarea formControlName="notas" rows="3" placeholder="Ej: quiero un fade bajo, traigo foto de referencia"></textarea>
                 </label>
+
+                <fieldset class="full aviso-canal">
+                  <legend>¿Cómo le avisamos a {{ primerNombreBarbero() }}?</legend>
+                  <label class="opcion">
+                    <input type="radio" formControlName="avisoPor" value="whatsapp" />
+                    <span>Por WhatsApp <em>(se abre el chat con tu turno escrito)</em></span>
+                  </label>
+                  <label class="opcion">
+                    <input type="radio" formControlName="avisoPor" value="email" />
+                    <span>Por mail <em>(le llega solo, no hace falta hacer nada)</em></span>
+                  </label>
+                </fieldset>
 
                 @if (errorEnvio(); as e) {
                   <p class="error-envio full" role="alert">{{ e }}</p>

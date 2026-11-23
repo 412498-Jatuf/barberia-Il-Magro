@@ -54,7 +54,11 @@ export interface ReservarTurnoRequest {
   /** HH:mm */
   hora: string;
   notas: string | null;
+  /** Como le avisa el cliente a Luca: por WhatsApp (se abre el chat) o por email (sale del servidor). */
+  avisoPor: AvisoPor;
 }
+
+export type AvisoPor = 'whatsapp' | 'email';
 
 export interface TurnoReservado {
   id: number;

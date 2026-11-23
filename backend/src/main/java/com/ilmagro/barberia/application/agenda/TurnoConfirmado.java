@@ -24,9 +24,11 @@ public record TurnoConfirmado(
         LocalTime horaInicio,
         LocalTime horaFin,
         String notas,
-        String codigoCancelacion
+        String codigoCancelacion,
+        /** Canal elegido por el cliente ("email", "whatsapp") o null si no eligio. */
+        String avisoPor
 ) {
-    static TurnoConfirmado de(Turno turno) {
+    static TurnoConfirmado de(Turno turno, String avisoPor) {
         return new TurnoConfirmado(
                 turno.getId(),
                 turno.getCliente().getNombre(),
@@ -40,6 +42,7 @@ public record TurnoConfirmado(
                 turno.getHoraInicio(),
                 turno.getHoraFin(),
                 turno.getNotas(),
-                turno.getCodigoCancelacion());
+                turno.getCodigoCancelacion(),
+                avisoPor);
     }
 }

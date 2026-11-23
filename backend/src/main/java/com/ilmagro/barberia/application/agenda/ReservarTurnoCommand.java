@@ -11,6 +11,12 @@ public record ReservarTurnoCommand(
         Long barberoId,
         LocalDate fecha,
         LocalTime hora,
-        String notas
+        String notas,
+        /** Canal por el que el cliente eligio avisar: "email" o "whatsapp" (null = todos los activos). */
+        String avisoPor
 ) {
+    public ReservarTurnoCommand(String clienteNombre, String clienteTelefono, String clienteEmail, Long servicioId,
+                                Long barberoId, LocalDate fecha, LocalTime hora, String notas) {
+        this(clienteNombre, clienteTelefono, clienteEmail, servicioId, barberoId, fecha, hora, notas, null);
+    }
 }
