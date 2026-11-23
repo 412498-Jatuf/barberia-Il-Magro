@@ -45,7 +45,7 @@
               <div class="visit__col stack-4">
                 @if (b.calle) {
                   <address class="visit__address">{{ b.calle }}@if (b.barrio) {<br>{{ b.barrio }}}</address>
-                  <a class="link" [href]="mapa" target="_blank" rel="noopener">Cómo llegar</a>
+                  <a class="link con-ubicacion" [href]="mapa" target="_blank" rel="noopener">Cómo llegar</a>
                 } @else {
                   <p class="visit__address">Turno online, sin esperas</p>
                 }
@@ -66,9 +66,8 @@
                   {{ nombresBarberos() }}
                 </span>
               </li>
-              <li><span>Pago</span><span>En el local, al terminar</span></li>
               @if (whatsapp) {
-                <li><span>Consultas</span><a class="link" [href]="whatsapp" target="_blank" rel="noopener">WhatsApp</a></li>
+                <li><span>Consultas</span><a class="link con-wa" [href]="whatsapp" target="_blank" rel="noopener">WhatsApp</a></li>
               }
             </ul>
           </div>
@@ -86,7 +85,6 @@
       <div class="wrap">
         <div class="section-head">
           <h2 id="servicios-h">Servicios y precios</h2>
-          <p>Precio final, se paga en el local. Tocá un servicio para ver los horarios libres.</p>
         </div>
         <div class="grid grid--top">
           <div class="span-6">
@@ -94,7 +92,7 @@
             <ul class="rows">
               @for (s of datos.servicios(); track s.id) {
                 <li>
-                  <a class="rows__name" routerLink="/turnos" [queryParams]="{ servicio: s.id }">{{ s.nombre }}<small>{{ s.duracionMinutos }} min · {{ s.descripcion }}</small></a>
+                  <a class="rows__name" routerLink="/turnos" [queryParams]="{ servicio: s.id }">{{ s.nombre }}</a>
                   <span class="rows__value">{{ precio(s.precio) }}</span>
                 </li>
               }

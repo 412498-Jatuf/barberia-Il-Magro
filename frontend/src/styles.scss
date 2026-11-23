@@ -1,13 +1,5 @@
 /* CSS de pagina: solo lo que el kit (public/assets/system.css) no trae. */
 
-/* filas de servicios: la descripcion debajo del nombre, en gris */
-.rows .rows__name small {
-  display: block;
-  font-weight: 400;
-  color: var(--muted);
-  font-size: var(--t-body);
-}
-
 a.rows__name {
   text-decoration: none;
   color: inherit;
@@ -353,11 +345,15 @@ h2 {
 /* la barberia crece con su contenido (la foto nueva es alta): sin alto fijo no se mete en la seccion de abajo */
 main > section#visit { height: auto; min-height: 0; padding-bottom: 24px; }
 main > section#servicios { height: auto; min-height: 0; padding-top: 72px; padding-bottom: var(--s-7, 64px); }
-main > section#cortes { padding-top: var(--s-7, 64px); }
+/* cortes mide lo que su galeria: el kit le reservaba dos pantallas (--hm: 2) y sobraba un hueco enorme antes del cierre */
+main > section#cortes { height: auto; min-height: 0; padding-top: var(--s-7, 64px); padding-bottom: var(--s-7, 64px); }
+@media (max-width: 1023px) {
+  footer.closing { padding-top: var(--s-7, 64px); }
+}
 
 /* panel privado /admin: sin los links, el boton de reservar, el pie ni la barra de abajo del sitio publico;
-   solo queda el logo arriba */
-body.es-admin {
+   solo queda el logo arriba (la marca body[data-ruta] la pone core/ruta-actual.service.ts) */
+body[data-ruta='admin'] {
   footer.closing,
   .actionbar,
   header.nav .nav__links,
@@ -384,4 +380,149 @@ body.es-admin {
   object-fit: cover;
   background: #000;
   box-shadow: 0 0 0 1px rgb(201 169 110 / 0.7);
+}
+
+/* en /turnos ya se esta reservando: el pie no repite la invitacion a reservar */
+body[data-ruta='turnos'] footer.closing .closing__cta {
+  display: none;
+}
+
+/* credito del desarrollador (layout/credito.ts): discreto, en gris; el nombre es el link o abre el menu */
+.footer__credito {
+  color: var(--muted);
+}
+.credito {
+  position: relative;
+}
+.credito a,
+.credito__nombre {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.credito__nombre {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.credito__menu {
+  position: absolute;
+  bottom: calc(100% + var(--s-2));
+  /* en el celular el credito queda a la izquierda: el menu se abre hacia la derecha; en compu esta a la derecha */
+  left: 0;
+  z-index: 5;
+  min-width: 170px;
+  margin: 0;
+  padding: var(--s-2);
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.5);
+  animation: credito-aparece 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (min-width: 640px) {
+  .credito__menu {
+    left: auto;
+    right: 0;
+  }
+}
+.credito__menu a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--r-sm);
+}
+@media (hover: hover) and (pointer: fine) {
+  .credito a:hover,
+  .credito__nombre:hover {
+    color: var(--ink);
+  }
+  .credito__menu a:hover {
+    background: var(--surface, rgb(255 255 255 / 0.06));
+  }
+}
+@keyframes credito-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .credito__menu {
+    animation: none;
+  }
+}
+
+/* servicios y precios: la lista llena el alto de las fotos de al lado (filas altas, letra grande) en vez
+   de quedar chica arriba; el alto lo marcan las fotos */
+#servicios .grid.grid--top {
+  align-items: stretch;
+}
+#servicios .grid > .span-6 {
+  display: flex;
+  flex-direction: column;
+}
+#servicios .rows {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+#servicios .rows > li {
+  flex: 1;
+  align-items: center;
+  padding-block: var(--s-5);
+}
+/* misma tipografia que el titulo "Servicios y precios" (la display), un poco mas chica */
+#servicios .rows__name,
+#servicios .rows__value {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  letter-spacing: var(--display-tracking, -0.01em);
+  font-size: clamp(18px, 2vw, 26px);
+}
+
+/* el texto de "La barbería" con la misma tipografia que los titulos (la display); tamaño de lectura, no de titulo */
+#visit .section-head > p {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  letter-spacing: var(--display-tracking, -0.01em);
+  font-size: clamp(18px, 1.7vw, 24px);
+  line-height: 1.5;
+}
+
+/* el texto del inicio, igual que "La barbería": tipografia display a tamaño de lectura */
+.ochenta__copy .hero__lead {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight, 400);
+  letter-spacing: var(--display-tracking, -0.01em);
+  font-size: clamp(18px, 1.7vw, 24px);
+  line-height: 1.5;
+}
+
+/* iconito antes del texto de un link o boton: .con-wa (WhatsApp) o .con-ubicacion (pin del mapa). Monocromo, toma
+   el color del texto (el svg de assets/img va como mascara), asi sigue la estetica negro/marfil/dorado del sitio */
+.con-wa {
+  --icono: url("/assets/img/whatsapp.svg");
+}
+.con-ubicacion {
+  --icono: url("/assets/img/ubicacion.svg");
+}
+.con-wa::before,
+.con-ubicacion::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.5em;
+  vertical-align: -0.22em;
+  background-color: currentColor;
+  -webkit-mask: var(--icono) center / contain no-repeat;
+  mask: var(--icono) center / contain no-repeat;
 }

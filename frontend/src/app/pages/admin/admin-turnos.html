@@ -32,7 +32,7 @@
               <div class="turno__acciones">
                 <span class="chip">Cancelado</span>
                 @if (recientes().has(t.id)) {
-                  <a class="btn btn--primary btn--sm" [href]="avisoAlCliente(t)" target="_blank" rel="noopener">
+                  <a class="btn btn--primary btn--sm con-wa" [href]="avisoAlCliente(t)" target="_blank" rel="noopener">
                     Avisar a {{ primerNombre(t) }} por WhatsApp
                   </a>
                 }

@@ -2,18 +2,19 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BARBERIA, linkMapa, linkWhatsapp } from '../core/barberia.config';
 import { DatosService } from '../core/datos.service';
+import { Credito } from './credito';
 
 /** footer.closing del kit: fila 1 el cierre (close-word sin el nombre), fila 2 footer-visit. */
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink],
+  imports: [RouterLink, Credito],
   template: `
     <div class="wrap">
       <div class="closing__cta close--word">
         <div class="section-head--split">
           <div>
             <h2 id="close-h">Tu turno en un minuto</h2>
-            <p class="t-lead">Elegís servicio, día y horario. Pagás en el local.</p>
+            <p class="t-lead">Elegís servicio, día y horario.</p>
           </div>
           <a class="btn btn--primary" routerLink="/turnos">Reservar turno<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
         </div>
@@ -25,10 +26,10 @@ import { DatosService } from '../core/datos.service';
           <div class="span-6 stack-4">
             @if (b.calle) {
               <address class="footer__address">{{ b.calle }}@if (b.barrio) {, {{ b.barrio }}}</address>
-              <p><a class="link" [href]="mapa" target="_blank" rel="noopener">Cómo llegar</a></p>
+              <p><a class="link con-ubicacion" [href]="mapa" target="_blank" rel="noopener">Cómo llegar</a></p>
             }
             @if (whatsapp) {
-              <p><a class="link" [href]="whatsapp" target="_blank" rel="noopener">Escribinos por WhatsApp</a></p>
+              <p><a class="link con-wa" [href]="whatsapp" target="_blank" rel="noopener">Escribinos por WhatsApp</a></p>
             }
             @if (b.instagram) {
               <p><a class="link" [href]="'https://instagram.com/' + b.instagram" target="_blank" rel="noopener">Instagram</a></p>
@@ -53,6 +54,7 @@ import { DatosService } from '../core/datos.service';
         </nav>
         <div class="footer__legal">
           <span>&copy; {{ anio }} {{ b.nombre }} · {{ b.barbero }}</span>
+          <app-credito class="footer__credito" />
         </div>
       </div>
     </div>

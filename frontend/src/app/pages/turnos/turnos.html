@@ -10,10 +10,10 @@
           <div class="aviso-wsp" role="status">
             @if (wspAbierto()) {
               <p><strong>Se abrió WhatsApp con tu turno.</strong> Tocá <em>Enviar</em> para que le llegue a {{ t.barbero }}.</p>
-              <a [href]="link" target="_blank" rel="noopener" class="btn btn--secondary">Abrir WhatsApp de nuevo</a>
+              <a [href]="link" target="_blank" rel="noopener" class="btn btn--secondary con-wa">Abrir WhatsApp de nuevo</a>
             } @else {
               <p><strong>Último paso:</strong> mandale tu turno a {{ t.barbero }} por WhatsApp. El mensaje ya está escrito.</p>
-              <a [href]="link" target="_blank" rel="noopener" class="btn btn--primary">Enviar turno por WhatsApp</a>
+              <a [href]="link" target="_blank" rel="noopener" class="btn btn--primary con-wa">Enviar turno por WhatsApp</a>
             }
           </div>
         }

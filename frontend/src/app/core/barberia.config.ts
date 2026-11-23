@@ -33,6 +33,28 @@ export const BARBERIA: DatosBarberia = {
   ],
 };
 
+/** Quien hizo el sitio: va en el pie, como credito discreto. Cada via de contacto en null no se muestra. */
+export interface Desarrollador {
+  nombre: string;
+  linkedin: string | null;
+  /** Casilla de mail. */
+  email: string | null;
+  /** WhatsApp en formato internacional sin "+" ni espacios. */
+  whatsapp: string | null;
+}
+
+export const DESARROLLADOR: Desarrollador = {
+  nombre: 'Thiago Jatuf',
+  linkedin: 'https://www.linkedin.com/in/thiago-uriel-jatuf-b0b208364/',
+  email: 'thiagojatuf@gmail.com',
+  whatsapp: '5493512080666',
+};
+
+/** Link de WhatsApp (wa.me) a un numero, con un mensaje ya escrito. */
+export function waMe(numero: string, mensaje: string): string {
+  return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+}
+
 /** Link a Google Maps, solo cuando hay calle (sin calle no se muestra). */
 export function linkMapa(b: DatosBarberia): string | null {
   if (!b.calle) return null;
@@ -43,5 +65,5 @@ export function linkMapa(b: DatosBarberia): string | null {
 /** Link a WhatsApp con un mensaje inicial, o null si no hay numero. */
 export function linkWhatsapp(b: DatosBarberia, mensaje = 'Hola, quería consultar por un turno'): string | null {
   if (!b.whatsapp) return null;
-  return `https://wa.me/${b.whatsapp}?text=${encodeURIComponent(mensaje)}`;
+  return waMe(b.whatsapp, mensaje);
 }
