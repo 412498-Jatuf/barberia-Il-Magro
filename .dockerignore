@@ -1,0 +1,18 @@
+# Lo que no tiene que entrar al contexto de la imagen (mas liviano y sin secretos)
+.git
+.claude
+.playwright-mcp
+skills-lock.json
+db
+docker-compose.yml
+**/.env
+**/.env.*
+!**/.env.ejemplo
+**/node_modules
+**/dist
+**/.angular
+**/target
+frontend/shots
+frontend/.angular
+**/*.png
+!frontend/public/**/*.png
