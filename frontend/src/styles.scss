@@ -231,7 +231,7 @@ h2 {
   font: var(--display-weight) 22px/1.2 var(--font-display);
 }
 
-/* ---------------------------------------------------------------- la escena: arco, luz y la silueta del logo */
+/* ---------------------------------------------------------------- la escena: arco, luz y la tijera de barbero */
 .escena {
   position: relative;
   width: 100%;
@@ -283,35 +283,72 @@ h2 {
   background: linear-gradient(180deg, rgb(201 169 110 / 0.09), transparent 70%);
 }
 
-/* la silueta del perfil del logo: foto en negro con el contraluz blanco. Con mix-blend-mode screen
-   el negro desaparece y queda solo el filo de luz sobre el arco. Con el scroll se acerca (crece) y
-   el contraluz brilla mas; al cargar aparece desde la penumbra. --sy lo pone fondo-scroll.ts (0 a 1000) */
-.silueta {
+/* tijera de barbero, en linea dorada con degradé de metal, centradas en el arco bajo el
+   cono de luz. La tijera arranca cerrada y se abre al cargar; con el scroll se acerca y brilla un poco mas.
+   --sy lo pone fondo-scroll.ts (0 a 1000) */
+.tijera {
   --cerca: min(calc(var(--sy, 0) / 700), 1);
   position: absolute;
   left: 50%;
-  bottom: 12%;
-  width: 104%;
-  max-width: none;
+  bottom: 14%;
+  width: 78%;
   height: auto;
-  mix-blend-mode: screen;
-  transform-origin: 50% 100%;
-  transform: translateX(-50%) scale(calc(1 + var(--cerca) * 0.08));
-  filter: brightness(calc(1.05 + var(--cerca) * 0.35)) drop-shadow(0 0 calc(2px + var(--cerca) * 6px) rgb(246 231 191 / 0.35));
-  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
-  mask-image: linear-gradient(180deg, #000 78%, transparent);
-  animation: penumbra 1.4s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: visible;
+  transform-origin: 50% 60%;
+  transform: translateX(-50%) scale(calc(1 + var(--cerca) * 0.06));
+  filter: drop-shadow(0 0 calc(6px + var(--cerca) * 10px) rgb(246 231 191 / 0.3));
 }
-
-@keyframes penumbra {
+.tijera .hoja {
+  fill: url(#oroTijera);
+  fill-opacity: 0.16;
+  stroke: url(#oroTijera);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.tijera .filo {
+  fill: none;
+  stroke: #fff6dc;
+  stroke-opacity: 0.85;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+.tijera .mango {
+  fill: none;
+  stroke: url(#oroTijera);
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+.tijera .anillo {
+  fill: none;
+  stroke: url(#oroTijera);
+  stroke-width: 9;
+}
+.tijera .tornillo {
+  fill: #0b0b0d;
+  stroke: url(#oroTijera);
+  stroke-width: 3;
+}
+.tijera .tornillo__centro {
+  fill: #d9b877;
+}
+.tijera .tijera__mitad {
+  transform-box: view-box;
+  transform-origin: 204px 262px;
+  animation: tijeretazo 1.5s 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.tijera .tijera__mitad--a {
+  --giro: -11deg;
+}
+.tijera .tijera__mitad--b {
+  --giro: 11deg;
+}
+@keyframes tijeretazo {
   from {
-    opacity: 0;
-    filter: brightness(0.4);
+    transform: rotate(var(--giro));
   }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  .silueta { animation: none; }
+  .tijera .tijera__mitad { animation: none; }
 }
 
 @media (max-width: 1023px) {

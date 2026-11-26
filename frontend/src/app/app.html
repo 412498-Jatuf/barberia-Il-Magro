@@ -12,12 +12,35 @@
           <div class="btn-row"><a class="btn btn--primary" routerLink="/turnos">Reservar turno</a></div>
         </div>
         <!-- la escena: un arco clasico con doble filete dorado, luz de gala desde arriba y la silueta
-             del perfil del logo de Il Magro. Con el scroll se acerca y el contraluz brilla mas -->
+             una tijera de barbero en oro. Con el scroll se acerca y la luz brilla mas -->
         <div class="escena" aria-hidden="true">
           <div class="arco">
             <div class="arco__luz"></div>
             <div class="arco__piso"></div>
-            <img class="silueta" src="assets/img/silueta.jpg" width="900" height="689" alt="" decoding="async">
+            <svg class="tijera" viewBox="0 0 400 500" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="oroTijera" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#f6e7bf" />
+                  <stop offset="0.45" stop-color="#d9b877" />
+                  <stop offset="1" stop-color="#8f7340" />
+                </linearGradient>
+              </defs>
+              <!-- cada mitad: hoja con filo, mango curvo y anillo; giran sobre el tornillo (204,262) -->
+              <g class="tijera__mitad tijera__mitad--a">
+                <path class="hoja" d="M198 264 L248 24 Q238 150 216 270 Z" />
+                <path class="filo" d="M199 262 L247 28" />
+                <path class="mango" d="M208 266 C198 322 172 352 158 384" />
+                <ellipse class="anillo" cx="140" cy="410" rx="40" ry="29" transform="rotate(-28 140 410)" />
+              </g>
+              <g class="tijera__mitad tijera__mitad--b">
+                <path class="hoja" d="M210 264 L160 24 Q170 150 192 270 Z" />
+                <path class="filo" d="M209 262 L161 28" />
+                <path class="mango" d="M200 266 C210 322 236 352 250 384" />
+                <ellipse class="anillo" cx="268" cy="410" rx="40" ry="29" transform="rotate(28 268 410)" />
+              </g>
+              <circle class="tornillo" cx="204" cy="262" r="9" />
+              <circle class="tornillo__centro" cx="204" cy="262" r="3" />
+            </svg>
           </div>
         </div>
       </div>
