@@ -40,7 +40,7 @@ class AvisoEmail implements AvisoDeTurno {
             m.setReplyTo(turno.clienteEmail());
         }
         m.setSubject(MensajeTurno.asunto(turno));
-        m.setText(MensajeTurno.texto(turno, props.sitio()));
+        m.setText(MensajeTurno.texto(turno));
         mail.send(m);
     }
 }

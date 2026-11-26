@@ -20,7 +20,7 @@ final class MensajeTurno {
         return "Turno nuevo: " + t.clienteNombre() + ", " + fecha(t) + " " + t.horaInicio().format(HORA);
     }
 
-    static String texto(TurnoConfirmado t, String sitio) {
+    static String texto(TurnoConfirmado t) {
         NumberFormat pesos = NumberFormat.getCurrencyInstance(ES_AR);
         pesos.setMaximumFractionDigits(0);
         StringBuilder sb = new StringBuilder()
@@ -37,11 +37,6 @@ final class MensajeTurno {
                 .append("Barbero: ").append(t.barbero()).append('\n');
         if (t.notas() != null && !t.notas().isBlank()) {
             sb.append("Comentarios: ").append(t.notas()).append('\n');
-        }
-        if (sitio != null && !sitio.isBlank() && t.codigoCancelacion() != null) {
-            String base = sitio.endsWith("/") ? sitio.substring(0, sitio.length() - 1) : sitio;
-            sb.append("\nSi se cancela, el horario se libera aca: ")
-                    .append(base).append("/cancelar/").append(t.codigoCancelacion()).append('\n');
         }
         return sb.toString();
     }
