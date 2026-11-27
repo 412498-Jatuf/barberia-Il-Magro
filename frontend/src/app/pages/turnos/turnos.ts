@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, DestroyRef, Injector, OnInit, afterNextRender, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -30,6 +30,7 @@ export class Turnos implements OnInit {
   private readonly whatsapp = inject(WhatsappService);
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
 
   /** ?servicio=ID desde la landing (bindeado por withComponentInputBinding). */
   readonly servicio = input<string>();
@@ -178,7 +179,7 @@ export class Turnos implements OnInit {
           this.confirmado.set(turno);
           this.avisoElegido.set(avisoPor);
           if (avisoPor === 'whatsapp') this.enviarALuca(turno, cliente, s.duracionMinutos);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.verConfirmacion();
         },
         error: (err: HttpErrorResponse) => {
           this.enviando.set(false);
@@ -187,6 +188,15 @@ export class Turnos implements OnInit {
           if (err.status === 409) this.refrescarHorarios();
         },
       });
+  }
+
+  /**
+   * Lleva la pantalla al principio de la confirmacion. Hay que esperar a que Angular la dibuje: antes de
+   * eso la pagina sigue siendo la del formulario (larga) y en el celular el navegador, al achicarse la
+   * pagina, deja el scroll abajo, en el pie. Sin animacion, para que no compita con ese ajuste.
+   */
+  private verConfirmacion(): void {
+    afterNextRender(() => window.scrollTo({ top: 0, behavior: 'instant' }), { injector: this.injector });
   }
 
   protected nuevoTurno(): void {

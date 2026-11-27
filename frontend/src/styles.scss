@@ -351,6 +351,11 @@ h2 {
   .tijera .tijera__mitad { animation: none; }
 }
 
+/* en el celular el arco con la tijera no va: el inicio arranca directo con el nombre y el boton */
+@media (max-width: 639px) {
+  .escena { display: none; }
+}
+
 @media (max-width: 1023px) {
   .ochenta { grid-template-columns: 1fr; }
   .escena { width: min(100%, 360px); justify-self: center; order: -1; aspect-ratio: 1 / 1; }
