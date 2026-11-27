@@ -4,17 +4,18 @@ import { AdminService } from '../../core/admin.service';
 import { AdminCierres } from './admin-cierres';
 import { AdminHorario } from './admin-horario';
 import { AdminLogin } from './admin-login';
+import { AdminPrecios } from './admin-precios';
 import { AdminTurnos } from './admin-turnos';
 
-type Pestana = 'turnos' | 'horario' | 'cierres';
+type Pestana = 'turnos' | 'horario' | 'cierres' | 'precios';
 
 /**
- * Panel de Luca (/admin): ingreso y, adentro, tres pestanas: los turnos (ver y cancelar), el horario de
- * la semana y los cierres de dias u horas. La pagina no se linkea desde el sitio ni la indexan los buscadores.
+ * Panel de Luca (/admin): ingreso y, adentro, cuatro pestanas: los turnos (ver y cancelar), el horario de
+ * la semana, los cierres de dias u horas y los precios de los servicios. La pagina no se linkea desde el sitio ni la indexan los buscadores.
  */
 @Component({
   selector: 'app-admin',
-  imports: [AdminLogin, AdminTurnos, AdminHorario, AdminCierres],
+  imports: [AdminLogin, AdminTurnos, AdminHorario, AdminCierres, AdminPrecios],
   templateUrl: './admin.html',
   styleUrl: './admin.scss',
   // los estilos del panel cubren tambien a sus pestanas (cuelgan de .admin)
@@ -29,6 +30,7 @@ export class Admin implements OnInit {
     { id: 'turnos', nombre: 'Turnos' },
     { id: 'horario', nombre: 'Horario' },
     { id: 'cierres', nombre: 'Cierres' },
+    { id: 'precios', nombre: 'Precios' },
   ];
 
   constructor() {

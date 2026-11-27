@@ -9,11 +9,14 @@ import com.ilmagro.barberia.domain.agenda.Tramo;
 import com.ilmagro.barberia.interfaces.rest.dto.AgendaDtos.DiaResponse;
 import com.ilmagro.barberia.interfaces.rest.dto.AgendaDtos.TramoResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -73,6 +76,14 @@ public final class AdminDtos {
             return new SemanaGuardadaResponse(s.semana().stream().map(AdminDtos::dia).toList(),
                     s.turnosAfectados().stream().map(TurnoAdminResponse::de).toList());
         }
+    }
+
+    /** Precio nuevo de un servicio: mayor que cero, hasta 8 cifras y 2 decimales (lo que entra en la columna). */
+    public record PrecioRequest(
+            @NotNull(message = "ingresa el precio")
+            @Positive(message = "el precio tiene que ser mayor que cero")
+            @Digits(integer = 8, fraction = 2, message = "el precio es demasiado grande o tiene demasiados decimales")
+            BigDecimal precio) {
     }
 
     /** Sin horas: se cierra el dia entero. */

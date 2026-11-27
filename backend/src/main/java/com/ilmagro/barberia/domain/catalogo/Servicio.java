@@ -31,13 +31,23 @@ public class Servicio {
         if (duracionMinutos <= 0) {
             throw new DatoInvalidoException("La duracion del servicio debe ser positiva");
         }
-        if (precio == null || precio.signum() < 0) {
-            throw new DatoInvalidoException("El precio del servicio no puede ser negativo");
-        }
+        validarPrecio(precio);
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.duracionMinutos = duracionMinutos;
         this.precio = precio;
+    }
+
+    /** Cambia lo que cuesta el servicio. Los turnos ya reservados no guardan el precio: lo leen de aca. */
+    public void cambiarPrecio(BigDecimal nuevoPrecio) {
+        validarPrecio(nuevoPrecio);
+        this.precio = nuevoPrecio;
+    }
+
+    private static void validarPrecio(BigDecimal precio) {
+        if (precio == null || precio.signum() < 0) {
+            throw new DatoInvalidoException("El precio del servicio no puede ser negativo");
+        }
     }
 
     public Long getId() { return id; }

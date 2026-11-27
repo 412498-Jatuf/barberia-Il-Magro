@@ -1,0 +1,51 @@
+<section class="bloque" aria-labelledby="precios-h">
+  <div class="bloque__cabecera">
+    <h2 id="precios-h">Precios de los servicios</h2>
+  </div>
+  <p class="ayuda">Escribí el precio nuevo y tocá Guardar. Vale para los turnos que se reserven desde ahora y se ve enseguida en el sitio.</p>
+
+  @if (cargando()) {
+    <p class="estado">Cargando…</p>
+  } @else if (error(); as e) {
+    <p class="estado error" role="alert">{{ e }}</p>
+  } @else {
+    <ul class="lista" role="list">
+      @for (s of servicios(); track s.id) {
+        <li class="precio-fila">
+          <div class="precio-fila__datos">
+            <strong>{{ s.nombre }}</strong>
+            <span>{{ s.duracionMinutos }} min · hoy {{ precio(s.precio) }}</span>
+          </div>
+
+          <div class="precio-fila__campo">
+            <label class="precio-input">
+              <span class="oculto">Precio de {{ s.nombre }}</span>
+              <b aria-hidden="true">$</b>
+              <input type="number" inputmode="decimal" min="1" step="any" [value]="valor(s)"
+                     (input)="editar(s, escrito($event))" [attr.aria-invalid]="invalido(s)"
+                     (keydown.enter)="guardar(s)" />
+            </label>
+            <button type="button" class="btn btn--primary btn--sm" (click)="guardar(s)"
+                    [disabled]="!cambio(s) || guardando() !== null">
+              {{ guardando() === s.id ? 'Guardando…' : 'Guardar' }}
+            </button>
+          </div>
+
+          @if (invalido(s)) {
+            <p class="estado error" role="alert">Ingresá un precio mayor que cero, con hasta 2 decimales.</p>
+          }
+          @if (falla(); as f) {
+            @if (f.id === s.id) {
+              <p class="estado error" role="alert">{{ f.mensaje }}</p>
+            }
+          }
+          @if (guardado() === s.id) {
+            <p class="estado ok" role="status">Listo, ahora cuesta {{ precio(s.precio) }}.</p>
+          }
+        </li>
+      } @empty {
+        <li class="estado">No hay servicios cargados.</li>
+      }
+    </ul>
+  }
+</section>

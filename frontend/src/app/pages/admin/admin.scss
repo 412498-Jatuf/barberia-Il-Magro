@@ -184,7 +184,7 @@
 
   .pestanas {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--s-2);
     margin-bottom: var(--s-7);
 
@@ -195,6 +195,7 @@
       border-radius: var(--r-sm);
       color: var(--ink);
       font: 500 var(--t-small) / 1 var(--font-text);
+      padding: 0 var(--s-2);
       cursor: pointer;
       transition:
         background-color 0.15s ease,
@@ -483,6 +484,85 @@
       font-size: var(--t-small);
       font-style: normal;
     }
+  }
+
+  /* ---------- precios de los servicios ---------- */
+  .precio-fila {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4) 0;
+    border-top: 1px solid var(--line);
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .precio-fila__datos {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+
+    span {
+      color: var(--muted);
+      font-size: var(--t-small);
+    }
+  }
+
+  /* el boton sin cambios por guardar se ve apagado */
+  .precio-fila .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* campo y boton en una fila; en el celular el campo se achica y el boton queda a la derecha */
+  .precio-fila__campo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--s-3);
+    align-items: center;
+  }
+
+  .precio-input {
+    position: relative;
+    display: block;
+    min-width: 0;
+
+    b {
+      position: absolute;
+      left: var(--s-4);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-weight: 500;
+      pointer-events: none;
+    }
+
+    input {
+      padding-left: calc(var(--s-4) + 18px);
+      appearance: textfield;
+    }
+
+    /* sin las flechitas de subir y bajar: el precio se escribe, no se mueve de a uno */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+
+    input[aria-invalid='true'] {
+      border-color: #ff8a8a;
+    }
+  }
+
+  /* solo para lectores de pantalla: el campo no lleva texto visible porque el nombre ya esta arriba */
+  .oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* ---------- aviso de turnos afectados ---------- */

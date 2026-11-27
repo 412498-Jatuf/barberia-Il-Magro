@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.URI;
@@ -172,6 +173,57 @@ class AdminApiTest {
             pedir("POST", "/api/admin/turnos/" + id(turno) + "/cancelar", null, true);
         }
         assertThat(horariosLibres("2026-11-28")).contains("\"19:00\"", "\"20:00\"");
+    }
+
+    @Test
+    void sinSesionNoSePuedeCambiarUnPrecio() throws Exception {
+        Long id = servicios.buscarTodos().getFirst().getId();
+        BigDecimal original = servicios.buscarTodos().getFirst().getPrecio();
+
+        assertThat(pedir("PUT", "/api/admin/servicios/" + id + "/precio", "{\"precio\":1}", false).statusCode())
+                .isIn(401, 403);
+        assertThat(servicios.buscarPorId(id).orElseThrow().getPrecio()).isEqualByComparingTo(original);
+    }
+
+    @Test
+    void lucaCambiaElPrecioYLosClientesVenElNuevo() throws Exception {
+        iniciarSesion();
+        Long id = servicios.buscarTodos().getFirst().getId();
+        BigDecimal original = servicios.buscarTodos().getFirst().getPrecio();
+        String ruta = "/api/admin/servicios/" + id + "/precio";
+        String turno = null;
+        try {
+            // sin el token CSRF se rechaza; con el token, se guarda
+            assertThat(pedir("PUT", ruta, "{\"precio\":9500}", false).statusCode()).isEqualTo(403);
+            HttpResponse<String> guardado = pedir("PUT", ruta, "{\"precio\":9500}", true);
+            assertThat(guardado.statusCode()).isEqualTo(200);
+            assertThat(guardado.body()).contains("\"id\":" + id).contains("9500");
+
+            // lo ve cualquiera en la lista publica y lo paga quien reserva desde ahora
+            assertThat(pedir("GET", "/api/servicios", null, false).body()).contains("9500");
+            turno = reservarComoCliente("2026-11-27", "21:00");
+            assertThat(turno).contains("\"precio\":9500");
+        } finally {
+            if (turno != null) pedir("POST", "/api/admin/turnos/" + id(turno) + "/cancelar", null, true);
+            pedir("PUT", ruta, "{\"precio\":" + original.toPlainString() + "}", true);
+        }
+        assertThat(servicios.buscarPorId(id).orElseThrow().getPrecio()).isEqualByComparingTo(original);
+    }
+
+    @Test
+    void unPrecioInvalidoOUnServicioInexistenteSeRechazan() throws Exception {
+        iniciarSesion();
+        Long id = servicios.buscarTodos().getFirst().getId();
+        BigDecimal original = servicios.buscarTodos().getFirst().getPrecio();
+        String ruta = "/api/admin/servicios/" + id + "/precio";
+
+        for (String malo : new String[]{"{\"precio\":0}", "{\"precio\":-500}", "{\"precio\":123456789}",
+                "{\"precio\":1500.555}", "{}", "{\"precio\":\"mucho\"}"}) {
+            assertThat(pedir("PUT", ruta, malo, true).statusCode()).as(malo).isEqualTo(400);
+        }
+        assertThat(pedir("PUT", "/api/admin/servicios/999999/precio", "{\"precio\":5000}", true).statusCode())
+                .isEqualTo(404);
+        assertThat(servicios.buscarPorId(id).orElseThrow().getPrecio()).isEqualByComparingTo(original);
     }
 
     // ---------- ayudas ----------

@@ -43,6 +43,11 @@ export class DatosService {
     return precios.length ? Math.min(...precios) : null;
   });
 
+  /** Deja en el sitio el servicio ya actualizado (por ejemplo, con el precio que Luca acaba de guardar). */
+  reemplazarServicio(actualizado: Servicio): void {
+    this.servicios.update((lista) => lista.map((s) => (s.id === actualizado.id ? actualizado : s)));
+  }
+
   private pedido = false;
 
   cargar(): void {

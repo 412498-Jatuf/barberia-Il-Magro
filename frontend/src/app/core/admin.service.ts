@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, catchError, map, tap, throwError } from 'rxjs';
-import { BloqueoAgenda, BloqueoCreado, DiaHorario, NuevoBloqueo, SemanaGuardada, TurnoAdmin } from './models';
+import { BloqueoAgenda, BloqueoCreado, DiaHorario, NuevoBloqueo, SemanaGuardada, Servicio, TurnoAdmin } from './models';
 
 interface Sesion {
   usuario: string;
@@ -63,6 +63,11 @@ export class AdminService {
 
   quitarBloqueo(id: number): Observable<void> {
     return this.protegido(this.http.delete<void>(`${this.base}/bloqueos/${id}`));
+  }
+
+  /** Cambia el precio de un servicio; las reservas nuevas ya usan el precio nuevo. */
+  cambiarPrecio(servicioId: number, precio: number): Observable<Servicio> {
+    return this.protegido(this.http.put<Servicio>(`${this.base}/servicios/${servicioId}/precio`, { precio }));
   }
 
   private protegido<T>(pedido: Observable<T>): Observable<T> {
